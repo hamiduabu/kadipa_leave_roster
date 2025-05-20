@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png">
     <title>Leave Roster Schedule Form</title>
     <style>
         :root {
@@ -215,6 +216,7 @@
             border-radius: 4px;
             margin-top: 5px;
             display: inline-block;
+            border: 2px solid #17956a;
         }
 
         .days-remaining {
@@ -271,7 +273,7 @@
 <body>
     <!-- KADIPA Logo -->
     <div class="logo-container">
-        <img src="" alt="KADIPA Logo">
+        <img src="kadipa_logo.png" alt="KADIPA Logo">
     </div>
 
     <div class="form-container" id="formContainer">
@@ -304,7 +306,7 @@
                     <select id="department" name="department" required>
                         <option value="" selected disabled>Select Department/Unit</option>
                         <option value="Legal">Legal</option>
-                        <option value="Administration and Finance">Administration & Finance</option>
+                        <option value="Administration and Finance">Administration and Finance</option>
                         <option value="Public-Private Partnership & Privatization">Public-Private Partnership &
                             Privatization</option>
                         <option value="ES Office">ES Office</option>
@@ -323,9 +325,14 @@
                     <input type="text" id="jobTitle" name="jobTitle" required>
                 </div>
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="gradeLevel" class="required">Grade Level</label>
                     <input type="text" id="gradeLevel" name="gradeLevel" required>
+                </div> -->
+                <div class="form-group">
+                    <label for="gradeLevel" class="required">Grade Level (7-17)</label>
+                    <input type="number" id="gradeLevel" name="gradeLevel" min="7" max="17" required>
+                    <div class="date-info">Enter a number between 7 and 17</div>
                 </div>
             </div>
 
@@ -379,215 +386,455 @@
     </div>
 
     <script>
-        // Public Holidays 2025-2026
+        // Improved JavaScript for Leave Roster Form
+
+        // Public Holidays 2025-2026 - stored as strings for easier comparison
         const publicHolidays = [
-            new Date(2025, 5, 9),  // June 9, 2025
-            new Date(2025, 5, 10), // June 10, 2025
-            new Date(2025, 5, 12), // June 12, 2025
-            new Date(2025, 9, 1),  // October 1, 2025
-            new Date(2025, 11, 25), // December 25, 2025
-            new Date(2026, 0, 1)    // January 1, 2026
+            '2025-06-09', // June 9, 2025
+            '2025-06-10', // June 10, 2025
+            '2025-06-12', // June 12, 2025
+            '2025-10-01', // October 1, 2025
+            '2025-12-25', // December 25, 2025
+            '2026-01-01'  // January 1, 2026
         ];
 
         // Initialize variables
-        let totalLeaveDays = 30;
+        const totalLeaveDays = 30;
         let remainingLeaveDays = totalLeaveDays;
         let leaveSections = [];
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const departmentSelect = document.getElementById('department');
-            const otherDepartmentField = document.getElementById('otherDepartmentField');
-            const leaveInstallmentsSelect = document.getElementById('leaveInstallments');
-            const leaveDatesSectionsContainer = document.getElementById('leaveDatesSectionsContainer');
-            const errorModal = document.getElementById('errorModal');
-            const closeModal = document.getElementById('closeModal');
-            const confirmModal = document.getElementById('confirmModal');
-            const totalDaysErrorMessage = document.getElementById('totalDaysErrorMessage');
-            const remainingDaysCount = document.getElementById('remainingDaysCount');
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cache DOM elements
+            const elements = {
+                departmentSelect: document.getElementById('department'),
+                otherDepartmentField: document.getElementById('otherDepartmentField'),
+                otherDepartmentInput: document.getElementById('otherDepartment'),
+                leaveInstallmentsSelect: document.getElementById('leaveInstallments'),
+                leaveDatesSectionsContainer: document.getElementById('leaveDatesSectionsContainer'),
+                errorModal: document.getElementById('errorModal'),
+                closeModal: document.getElementById('closeModal'),
+                confirmModal: document.getElementById('confirmModal'),
+                totalDaysErrorMessage: document.getElementById('totalDaysErrorMessage'),
+                remainingDaysCount: document.getElementById('remainingDaysCount'),
+                leaveRosterForm: document.getElementById('leaveRosterForm'),
+                formContainer: document.getElementById('formContainer'),
+                successContainer: document.getElementById('successContainer'),
+                modalMessage: document.getElementById('modalMessage')
+            };
 
+            // Set up event listeners
+            setupEventListeners(elements);
+
+            // Initial render of leave sections
+            updateLeaveSections(elements);
+        });
+
+        /**
+         * Set up all event listeners for the form
+         * @param {Object} elements - DOM elements
+         */
+        function setupEventListeners(elements) {
             // Handle Department/Unit "Other" selection
-            departmentSelect.addEventListener('change', function () {
-                if (this.value === 'Other') {
-                    otherDepartmentField.style.display = 'block';
-                    document.getElementById('otherDepartment').setAttribute('required', 'required');
+            elements.departmentSelect.addEventListener('change', () => {
+                if (elements.departmentSelect.value === 'Other') {
+                    elements.otherDepartmentField.style.display = 'block';
+                    elements.otherDepartmentInput.setAttribute('required', 'required');
                 } else {
-                    otherDepartmentField.style.display = 'none';
-                    document.getElementById('otherDepartment').removeAttribute('required');
+                    elements.otherDepartmentField.style.display = 'none';
+                    elements.otherDepartmentInput.removeAttribute('required');
                 }
             });
 
             // Handle Leave Installments change
-            leaveInstallmentsSelect.addEventListener('change', function () {
-                updateLeaveSections();
+            elements.leaveInstallmentsSelect.addEventListener('change', () => {
+                updateLeaveSections(elements);
             });
 
             // Close modal events
-            closeModal.addEventListener('click', function () {
-                errorModal.style.display = 'none';
+            elements.closeModal.addEventListener('click', () => {
+                elements.errorModal.style.display = 'none';
             });
 
-            confirmModal.addEventListener('click', function () {
-                errorModal.style.display = 'none';
+            elements.confirmModal.addEventListener('click', () => {
+                elements.errorModal.style.display = 'none';
             });
 
-            // Initial render of leave sections
-            updateLeaveSections();
+            // Form submission
+            elements.leaveRosterForm.addEventListener('submit', (e) => handleFormSubmit(e, elements));
 
-            // Handle form submission
-            // Replace the form submission event handler with this fetch-based implementation
-            // Place this code in your HTML file, replacing the existing form submission handler
-
-            // Updated JavaScript fetch implementation with proper CORS handling
-            document.getElementById('leaveRosterForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                // Calculate total days allocated
-                let totalAllocatedDays = 0;
-                const numInstallments = parseInt(document.getElementById('leaveInstallments').value);
-
-                for (let i = 1; i <= numInstallments; i++) {
-                    const daysInput = document.getElementById(`leaveDays${i}`);
-                    if (daysInput) {
-                        totalAllocatedDays += parseInt(daysInput.value || 0);
-                    }
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === elements.errorModal) {
+                    elements.errorModal.style.display = 'none';
                 }
+            });
+        }
 
-                // Check if all leave days have been allocated
-                if (totalAllocatedDays < totalLeaveDays) {
-                    const daysRemaining = totalLeaveDays - totalAllocatedDays;
-                    remainingDaysCount.textContent = daysRemaining;
-                    totalDaysErrorMessage.style.display = 'block';
-                    window.scrollTo(0, document.body.scrollHeight);
+        /**
+         * Validate that no leave periods overlap with each other
+         * @param {Object} elements - DOM elements
+         * @returns {boolean} - Validation result
+         */
+        function validateNoOverlappingLeaves(elements) {
+            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
+
+            // No need to check if there's only one installment
+            if (numInstallments <= 1) {
+                return true;
+            }
+
+            // Create an array of leave periods with start and resumption dates
+            const leavePeriods = [];
+
+            for (let i = 1; i <= numInstallments; i++) {
+                const startDateInput = document.getElementById(`leaveStartDate${i}`);
+                const daysInput = document.getElementById(`leaveDays${i}`);
+
+                if (
+                    startDateInput &&
+                    startDateInput.value &&
+                    daysInput &&
+                    daysInput.value
+                ) {
+                    const startDate = new Date(startDateInput.value);
+                    const leaveDays = parseInt(daysInput.value);
+                    const resumptionDate = calculateResumptionDate(
+                        startDateInput.value,
+                        leaveDays
+                    );
+
+                    leavePeriods.push({
+                        index: i,
+                        startDate,
+                        resumptionDate,
+                    });
+                }
+            }
+
+            // Sort periods by start date
+            leavePeriods.sort((a, b) => a.startDate - b.startDate);
+
+            // Check for overlaps
+            for (let i = 0; i < leavePeriods.length - 1; i++) {
+                const currentPeriod = leavePeriods[i];
+                const nextPeriod = leavePeriods[i + 1];
+
+                // If the resumption date of the current period is after or equal to the start date of the next period
+                if (currentPeriod.resumptionDate >= nextPeriod.startDate) {
+                    // Show error
+                    const errorMessage = document.getElementById(
+                        `errorMessage${nextPeriod.index}`
+                    );
+                    errorMessage.textContent = `This leave period overlaps with installment #${currentPeriod.index}. Please select a later date.`;
+                    errorMessage.style.display = "block";
+
+                    // Focus on the problematic date field
+                    document.getElementById(`leaveStartDate${nextPeriod.index}`).focus();
+
+                    // Scroll to error
+                    document
+                        .getElementById(`leaveDatesSection${nextPeriod.index}`)
+                        .scrollIntoView({ behavior: "smooth" });
+
                     return false;
                 }
+            }
 
-                // Hide error message if it was showing
-                totalDaysErrorMessage.style.display = 'none';
+            // All periods are valid
+            return true;
+        }
 
-                const formData = {
-                    surname: document.getElementById('surname').value,
-                    firstName: document.getElementById('firstName').value,
-                    otherNames: document.getElementById('otherNames').value,
-                    department: document.getElementById('department').value,
-                    otherDepartment: document.getElementById('otherDepartment')?.value || '',
-                    jobTitle: document.getElementById('jobTitle').value,
-                    gradeLevel: document.getElementById('gradeLevel').value,
-                    leaveInstallments: document.getElementById('leaveInstallments').value,
-                    installments: []
-                };
 
-                for (let i = 1; i <= numInstallments; i++) {
-                    formData.installments.push({
-                        startDate: document.getElementById(`leaveStartDate${i}`).value,
-                        days: document.getElementById(`leaveDays${i}`).value,
-                        resumptionDate: document.getElementById(`resumptionDate${i}`).textContent
-                    });
+        /**
+         * Handle form submission
+         * @param {Event} e - Event object
+         * @param {Object} elements - DOM elements
+         */
+        function handleFormSubmit(e, elements) {
+            e.preventDefault();
+
+            // Validate all leave days have been allocated
+            if (!validateTotalDays(elements)) {
+                return false;
+            }
+
+            // Validate no overlapping leave periods
+            if (!validateNoOverlappingLeaves(elements)) {
+                return false;
+            }
+
+            // Build form data object
+            const formData = buildFormData(elements);
+
+            // Show loading indicator and disable submit button
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.textContent = "Submitting...";
+            submitButton.disabled = true;
+
+            // Google Apps Script URL
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxcAkA0tVCdUjf1kxriXZDY4s4dKqrAcAvvTshqxepCXPUIFUxno1mG5XG4-ReGfVkg/exec';
+
+            // Submit the form
+            submitToGoogleScript(formData, scriptUrl)
+                .then(response => {
+                    // Show success message
+                    elements.formContainer.style.display = 'none';
+                    elements.successContainer.style.display = 'block';
+                    window.scrollTo(0, 0);
+                })
+                .catch(error => {
+                    console.error('Error submitting form:', error);
+                    showErrorModal('An error occurred while submitting the form. Please try again later.', elements);
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitButton.textContent = originalButtonText;
+                    submitButton.disabled = false;
+                });
+        }
+
+        /**
+         * Validate that all leave days have been allocated
+         * @param {Object} elements - DOM elements
+         * @returns {boolean} - Validation result
+         */
+        function validateTotalDays(elements) {
+            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
+            let totalAllocatedDays = 0;
+
+            for (let i = 1; i <= numInstallments; i++) {
+                const daysInput = document.getElementById(`leaveDays${i}`);
+                if (daysInput) {
+                    totalAllocatedDays += parseInt(daysInput.value || 0);
                 }
+            }
 
-                // Show loading indicator or disable submit button here
-                const submitButton = document.querySelector('button[type="submit"]');
-                const originalButtonText = submitButton.textContent;
-                submitButton.textContent = "Submitting...";
-                submitButton.disabled = true;
+            // Check if all leave days have been allocated
+            if (totalAllocatedDays < totalLeaveDays) {
+                const daysRemaining = totalLeaveDays - totalAllocatedDays;
+                elements.remainingDaysCount.textContent = daysRemaining;
+                elements.totalDaysErrorMessage.style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+                return false;
+            }
 
-                // URLs for both direct and JSONP approaches
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbxcAkA0tVCdUjf1kxriXZDY4s4dKqrAcAvvTshqxepCXPUIFUxno1mG5XG4-ReGfVkg/exec';
+            // Hide error message if it was showing
+            elements.totalDaysErrorMessage.style.display = 'none';
+            return true;
+        }
 
-                // Try the JSONP approach (more reliable with Google Apps Script)
-                submitToGoogleScript(formData, scriptUrl)
-                    .then(response => {
-                        // Hide form and show success message
-                        document.getElementById('formContainer').style.display = 'none';
-                        document.getElementById('successContainer').style.display = 'block';
-                        window.scrollTo(0, 0);
-                    })
-                    .catch(error => {
-                        console.error('Error submitting form:', error);
-                        showErrorModal('An error occurred while submitting the form. Please try again later.');
-                    })
-                    .finally(() => {
-                        // Reset button state
-                        submitButton.textContent = originalButtonText;
-                        submitButton.disabled = false;
-                    });
-            });
+        /**
+         * Build form data object from form fields
+         * @param {Object} elements - DOM elements
+         * @returns {Object} - Form data object
+         */
+        function buildFormData(elements) {
+            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
+            const formData = {
+                surname: document.getElementById('surname').value,
+                firstName: document.getElementById('firstName').value,
+                otherNames: document.getElementById('otherNames').value,
+                department: elements.departmentSelect.value,
+                otherDepartment: elements.otherDepartmentInput?.value || '',
+                jobTitle: document.getElementById('jobTitle').value,
+                gradeLevel: document.getElementById('gradeLevel').value,
+                leaveInstallments: elements.leaveInstallmentsSelect.value,
+                installments: []
+            };
 
-            // Submit to Google Script Web App using an iframe technique to bypass CORS
-            function submitToGoogleScript(data, scriptUrl) {
-                return new Promise((resolve, reject) => {
-                    // Create a hidden form that targets a hidden iframe
-                    const iframe = document.createElement('iframe');
-                    iframe.name = 'hidden_iframe';
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
-
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = scriptUrl;
-                    form.target = 'hidden_iframe';
-
-                    // Add the data as a stringified JSON input
-                    const dataInput = document.createElement('input');
-                    dataInput.type = 'hidden';
-                    dataInput.name = 'data';
-                    dataInput.value = JSON.stringify(data);
-                    form.appendChild(dataInput);
-
-                    // Add the form to the document and submit it
-                    document.body.appendChild(form);
-
-                    // Set up a timeout to handle cases where the iframe load might not fire
-                    const timeoutId = setTimeout(() => {
-                        // If we don't get a clear response after 5 seconds, assume it worked
-                        // This is because Google Apps Script typically won't give us a proper response
-                        // due to CORS restrictions
-                        cleanup();
-                        resolve({ success: true });
-                    }, 5000);
-
-                    // Handle iframe load event (this may or may not fire depending on CORS policies)
-                    iframe.onload = () => {
-                        clearTimeout(timeoutId);
-                        cleanup();
-                        resolve({ success: true });
-                    };
-
-                    // Handle errors
-                    iframe.onerror = (error) => {
-                        clearTimeout(timeoutId);
-                        cleanup();
-                        reject(error);
-                    };
-
-                    // Submit the form
-                    form.submit();
-
-                    // Cleanup function to remove the temporary elements
-                    function cleanup() {
-                        if (form.parentNode) {
-                            form.parentNode.removeChild(form);
-                        }
-                        if (iframe.parentNode) {
-                            iframe.parentNode.removeChild(iframe);
-                        }
-                    }
+            for (let i = 1; i <= numInstallments; i++) {
+                formData.installments.push({
+                    startDate: document.getElementById(`leaveStartDate${i}`).value,
+                    days: document.getElementById(`leaveDays${i}`).value,
+                    resumptionDate: document.getElementById(`resumptionDate${i}`).textContent
                 });
             }
 
-            // Helper function to show error modal with custom message
-            function showErrorModal(message) {
-                document.getElementById('modalMessage').textContent = message;
-                document.getElementById('errorModal').style.display = 'block';
-            }
+            return formData;
+        }
 
-            // Helper function to show error modal with custom message
-            function showErrorModal(message) {
-                document.getElementById('modalMessage').textContent = message;
-                document.getElementById('errorModal').style.display = 'block';
-            }
-        });
+        /**
+         * Submit form data to Google Script Web App
+         * @param {Object} data - Form data object
+         * @param {string} scriptUrl - Google Script URL
+         * @returns {Promise} - Promise resolving when submission completes
+         */
+        function submitToGoogleScript(data, scriptUrl) {
+            return new Promise((resolve, reject) => {
+                // Create hidden iframe for form submission
+                const iframe = document.createElement('iframe');
+                iframe.name = 'hidden_iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
 
-        // Function to check if a date is a working day (Monday-Thursday, not a public holiday)
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = scriptUrl;
+                form.target = 'hidden_iframe';
+
+                // Add data as JSON
+                const dataInput = document.createElement('input');
+                dataInput.type = 'hidden';
+                dataInput.name = 'data';
+                dataInput.value = JSON.stringify(data);
+                form.appendChild(dataInput);
+
+                document.body.appendChild(form);
+
+                // Set timeout to handle cases where iframe load might not fire
+                const timeoutId = setTimeout(() => {
+                    cleanup();
+                    resolve({ success: true });
+                }, 5000);
+
+                // Handle iframe events
+                iframe.onload = () => {
+                    clearTimeout(timeoutId);
+                    cleanup();
+                    resolve({ success: true });
+                };
+
+                iframe.onerror = (error) => {
+                    clearTimeout(timeoutId);
+                    cleanup();
+                    reject(error);
+                };
+
+                // Submit the form
+                form.submit();
+
+                // Cleanup function
+                function cleanup() {
+                    if (form.parentNode) form.parentNode.removeChild(form);
+                    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                }
+            });
+        }
+
+        /**
+         * Show error modal with custom message
+         * @param {string} message - Error message
+         * @param {Object} elements - DOM elements
+         */
+        function showErrorModal(message, elements) {
+            elements.modalMessage.textContent = message;
+            elements.errorModal.style.display = 'block';
+        }
+
+        /**
+         * Update leave sections based on selected number of installments
+         * @param {Object} elements - DOM elements
+         */
+        function updateLeaveSections(elements) {
+            const container = elements.leaveDatesSectionsContainer;
+            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
+
+            // Clear container
+            container.innerHTML = '';
+
+            // Reset leave sections array
+            leaveSections = [];
+
+            // Reset remaining leave days
+            remainingLeaveDays = totalLeaveDays;
+
+            // Create new leave sections
+            for (let i = 1; i <= numInstallments; i++) {
+                createLeaveSection(container, i, elements);
+            }
+        }
+
+        /**
+         * Create a leave date section
+         * @param {HTMLElement} container - Container element
+         * @param {number} index - Section index
+         * @param {Object} elements - DOM elements
+         */
+        function createLeaveSection(container, index, elements) {
+            const section = document.createElement('div');
+            section.className = 'form-section leave-dates-section';
+            section.id = `leaveDatesSection${index}`;
+
+            section.innerHTML = `
+        <h3>Leave Installment #${index}</h3>
+        
+        <div class="form-group">
+            <label for="leaveStartDate${index}" class="required">Proposed Leave Start Date</label>
+            <input type="date" id="leaveStartDate${index}" name="leaveStartDate${index}" required min="${formatDate(new Date())}">
+            <div class="date-info">Select a Monday-Thursday that is not a public holiday</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="leaveDays${index}" class="required">Proposed Number of leave days for this installment</label>
+            <input type="number" id="leaveDays${index}" name="leaveDays${index}" required min="1" max="${remainingLeaveDays}" value="1">
+            <div class="date-info">Maximum available days: <span class="max-days" id="maxDays${index}">${remainingLeaveDays}</span></div>
+        </div>
+        
+        <div class="form-group">
+            <label for="resumptionDate${index}">Proposed Date of Resumption:</label>
+            <div class="resumption-date" id="resumptionDate${index}">Select a start date and number of days above to get your resumption date</div>
+        </div>
+        
+        <div class="days-remaining" id="daysRemaining${index}">
+            Remaining leave days after this installment: ${remainingLeaveDays}
+        </div>
+        
+        <div class="error-message" id="errorMessage${index}">
+            You don't have enough leave days remaining.
+        </div>
+    `;
+
+            container.appendChild(section);
+
+            // Store section reference
+            leaveSections.push({
+                index: index,
+                element: section,
+                daysInput: null
+            });
+
+            // Add event listeners
+            requestAnimationFrame(() => {
+                const startDateInput = document.getElementById(`leaveStartDate${index}`);
+                const daysInput = document.getElementById(`leaveDays${index}`);
+
+                // Update reference
+                leaveSections[index - 1].daysInput = daysInput;
+
+                // Add event listeners
+                startDateInput.addEventListener('change', () => {
+                    validateStartDate(index, elements);
+                    updateResumptionDate(index);
+                    // Validate overlaps whenever a date changes
+                    validateNoOverlappingLeaves(elements);
+                });
+
+                daysInput.addEventListener('change', () => {
+                    updateResumptionDate(index);
+                    updateRemainingDays(index, elements);
+                });
+
+                daysInput.addEventListener('input', () => {
+                    // Immediate validation for better user experience
+                    const value = parseInt(daysInput.value || 0);
+                    const max = parseInt(daysInput.max);
+
+                    if (value > max) {
+                        daysInput.value = max;
+                    } else if (value < 1 && daysInput.value !== '') {
+                        daysInput.value = 1;
+                    }
+                });
+            });
+        }
+
+        /**
+         * Check if a date is a working day (Monday-Thursday, not a public holiday)
+         * @param {Date} date - Date to check
+         * @returns {boolean} - True if working day
+         */
         function isWorkingDay(date) {
             const day = date.getDay();
 
@@ -596,17 +843,21 @@
                 return false;
             }
 
+            // Format date for comparison with public holidays array
+            const formattedDate = formatDate(date);
+
             // Check if date is not a public holiday
-            return !publicHolidays.some(holiday =>
-                holiday.getDate() === date.getDate() &&
-                holiday.getMonth() === date.getMonth() &&
-                holiday.getFullYear() === date.getFullYear()
-            );
+            return !publicHolidays.includes(formattedDate);
         }
 
-        // Function to calculate resumption date (next working day after leave)
-        function calculateResumptionDate(startDate, leaveDays) {
-            const start = new Date(startDate);
+        /**
+         * Calculate resumption date (next working day after leave)
+         * @param {string} startDateStr - Start date string
+         * @param {number} leaveDays - Number of leave days
+         * @returns {Date} - Resumption date
+         */
+        function calculateResumptionDate(startDateStr, leaveDays) {
+            const start = new Date(startDateStr);
             let workingDaysCount = 0;
             let currentDate = new Date(start);
 
@@ -625,125 +876,35 @@
             return currentDate;
         }
 
-        // Function to format date as YYYY-MM-DD
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // Function to format date as readable format
-        function formatReadableDate(date) {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
-        }
-
-        // Update leave sections based on selected number of installments
-        function updateLeaveSections() {
-            const container = document.getElementById('leaveDatesSectionsContainer');
-            const numInstallments = parseInt(document.getElementById('leaveInstallments').value);
-
-            // Clear container
-            container.innerHTML = '';
-
-            // Reset leave sections array
-            leaveSections = [];
-
-            // Reset remaining leave days
-            remainingLeaveDays = totalLeaveDays;
-
-            // Create new leave sections
-            for (let i = 1; i <= numInstallments; i++) {
-                createLeaveSection(container, i);
-            }
-        }
-
-        // Create a leave date section
-        function createLeaveSection(container, index) {
-            const section = document.createElement('div');
-            section.className = 'form-section leave-dates-section';
-            section.id = `leaveDatesSection${index}`;
-
-            section.innerHTML = `
-                <h3>Leave Installment #${index}</h3>
-                
-                <div class="form-group">
-                    <label for="leaveStartDate${index}" class="required">Proposed Leave Start Date</label>
-                    <input type="date" id="leaveStartDate${index}" name="leaveStartDate${index}" required min="${formatDate(new Date())}">
-                    <div class="date-info">Select a Monday-Thursday that is not a public holiday</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="leaveDays${index}" class="required">Proposed Number of leave days for this installment</label>
-                    <input type="number" id="leaveDays${index}" name="leaveDays${index}" required min="1" max="${remainingLeaveDays}" value="1">
-                    <div class="date-info">Maximum available days: <span class="max-days" id="maxDays${index}">${remainingLeaveDays}</span></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="resumptionDate${index}">Proposed Date of Resumption</label>
-                    <div class="resumption-date" id="resumptionDate${index}">Select a start date and number of days</div>
-                </div>
-                
-                <div class="days-remaining" id="daysRemaining${index}">
-                    Remaining leave days after this installment: ${remainingLeaveDays}
-                </div>
-                
-                <div class="error-message" id="errorMessage${index}">
-                    You don't have enough leave days remaining.
-                </div>
-            `;
-
-            container.appendChild(section);
-
-            // Store section reference
-            leaveSections.push({
-                index: index,
-                element: section,
-                daysInput: null
-            });
-
-            // Add event listeners after the section is added to DOM
-            setTimeout(() => {
-                const startDateInput = document.getElementById(`leaveStartDate${index}`);
-                const daysInput = document.getElementById(`leaveDays${index}`);
-
-                // Update reference
-                leaveSections[index - 1].daysInput = daysInput;
-
-                // Add event listeners
-                startDateInput.addEventListener('change', function () {
-                    updateResumptionDate(index);
-                    validateStartDate(index);
-                });
-
-                daysInput.addEventListener('change', function () {
-                    updateResumptionDate(index);
-                    updateRemainingDays(index);
-                });
-            }, 0);
-        }
-
-        // Validate start date is a working day
-        function validateStartDate(index) {
+        /**
+         * Validate start date is a working day
+         * @param {number} index - Section index
+         * @param {Object} elements - DOM elements
+         */
+        function validateStartDate(index, elements) {
             const startDateInput = document.getElementById(`leaveStartDate${index}`);
+            const errorMessage = document.getElementById(`errorMessage${index}`);
+
+            if (!startDateInput.value) return;
+
             const selectedDate = new Date(startDateInput.value);
 
             if (!isWorkingDay(selectedDate)) {
                 // Show error
-                document.getElementById(`errorMessage${index}`).textContent =
-                    "Selected date is not a working day. Please select a Monday-Thursday that is not a public holiday.";
-                document.getElementById(`errorMessage${index}`).style.display = 'block';
+                errorMessage.textContent = "Selected date is not a working day. Please select a Monday-Thursday that is not a public holiday.";
+                errorMessage.style.display = 'block';
                 startDateInput.setCustomValidity("Please select a working day");
             } else {
                 // Clear error
-                document.getElementById(`errorMessage${index}`).style.display = 'none';
+                errorMessage.style.display = 'none';
                 startDateInput.setCustomValidity("");
-                updateResumptionDate(index);
             }
         }
 
-        // Update resumption date display
+        /**
+         * Update resumption date display
+         * @param {number} index - Section index
+         */
         function updateResumptionDate(index) {
             const startDateInput = document.getElementById(`leaveStartDate${index}`);
             const daysInput = document.getElementById(`leaveDays${index}`);
@@ -754,15 +915,25 @@
                 const leaveDays = parseInt(daysInput.value);
 
                 if (isWorkingDay(startDate) && leaveDays > 0) {
-                    const resumptionDate = calculateResumptionDate(startDate, leaveDays);
+                    const resumptionDate = calculateResumptionDate(startDateInput.value, leaveDays);
                     resumptionDateDisplay.textContent = formatReadableDate(resumptionDate);
+                } else {
+                    resumptionDateDisplay.textContent = "Select a valid start date and number of days";
                 }
             }
         }
 
-        // Update remaining days after an installment
-        function updateRemainingDays(changedIndex) {
+        /**
+         * Update remaining days after an installment
+         * @param {number} changedIndex - Index of changed section
+         * @param {Object} elements - DOM elements
+         */
+        function updateRemainingDays(changedIndex, elements) {
             const daysInput = document.getElementById(`leaveDays${changedIndex}`);
+            const maxDaysDisplay = document.getElementById(`maxDays${changedIndex}`);
+            const remainingDisplay = document.getElementById(`daysRemaining${changedIndex}`);
+            const errorMessage = document.getElementById(`errorMessage${changedIndex}`);
+
             const requestedDays = parseInt(daysInput.value || 0);
 
             // Calculate total days used in all previous installments
@@ -778,44 +949,49 @@
             const daysAvailableForThis = totalLeaveDays - totalUsedDays;
             const remainingAfterThis = daysAvailableForThis - requestedDays;
 
-            // Update remaining days display
-            document.getElementById(`daysRemaining${changedIndex}`).textContent =
-                `Remaining leave days after this installment: ${remainingAfterThis}`;
-
-            // Update max available for this installment
-            document.getElementById(`maxDays${changedIndex}`).textContent = daysAvailableForThis;
+            // Update displays
+            remainingDisplay.textContent = `Remaining leave days after this installment: ${remainingAfterThis}`;
+            maxDaysDisplay.textContent = daysAvailableForThis;
             daysInput.max = daysAvailableForThis;
 
-            // Show error if needed
+            // Validate input
             if (requestedDays > daysAvailableForThis) {
-                document.getElementById(`errorMessage${changedIndex}`).textContent =
-                    `You only have ${daysAvailableForThis} days available for this installment.`;
-                document.getElementById(`errorMessage${changedIndex}`).style.display = 'block';
+                errorMessage.textContent = `You only have ${daysAvailableForThis} days available for this installment.`;
+                errorMessage.style.display = 'block';
                 daysInput.setCustomValidity("Too many days requested");
+
+                // Auto-correct value
+                daysInput.value = daysAvailableForThis;
+                // Re-calculate with corrected value
+                updateRemainingDays(changedIndex, elements);
+                return;
+
             } else if (requestedDays < 1) {
-                document.getElementById(`errorMessage${changedIndex}`).textContent =
-                    "You must take at least 1 day of leave.";
-                document.getElementById(`errorMessage${changedIndex}`).style.display = 'block';
+                errorMessage.textContent = "You must take at least 1 day of leave.";
+                errorMessage.style.display = 'block';
                 daysInput.setCustomValidity("Minimum 1 day required");
             } else {
-                document.getElementById(`errorMessage${changedIndex}`).style.display = 'none';
+                errorMessage.style.display = 'none';
                 daysInput.setCustomValidity("");
             }
 
             // Update remaining for next installments
-            updateRemainingForNextInstallments(changedIndex, remainingAfterThis);
+            updateRemainingForNextInstallments(changedIndex, remainingAfterThis, elements);
 
             // Hide the total days error message when days are being adjusted
-            document.getElementById('totalDaysErrorMessage').style.display = 'none';
+            elements.totalDaysErrorMessage.style.display = 'none';
         }
 
-        // Update remaining days for all subsequent installments
-        function updateRemainingForNextInstallments(changedIndex, remainingDays) {
+        /**
+         * Update remaining days for all subsequent installments
+         * @param {number} changedIndex - Index of changed section
+         * @param {number} remainingDays - Remaining days
+         * @param {Object} elements - DOM elements
+         */
+        function updateRemainingForNextInstallments(changedIndex, remainingDays, elements) {
             if (remainingDays < 0) {
-                // Show modal for exhausted leave days
-                document.getElementById('modalMessage').textContent =
-                    "Available leave days have been exhausted.";
-                document.getElementById('errorModal').style.display = 'block';
+                // This shouldn't happen now with our validation, but keep as a safety check
+                showErrorModal("Available leave days have been exhausted.", elements);
 
                 // Reset the value to maximum available
                 const daysInput = document.getElementById(`leaveDays${changedIndex}`);
@@ -823,50 +999,66 @@
                 daysInput.value = totalLeaveDays - previousInstallmentsDays;
 
                 // Update again with valid value
-                updateRemainingDays(changedIndex);
+                updateRemainingDays(changedIndex, elements);
                 return;
             }
 
             // Update subsequent installments
-            const numInstallments = parseInt(document.getElementById('leaveInstallments').value);
+            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
             let currentRemaining = remainingDays;
 
             for (let i = changedIndex + 1; i <= numInstallments; i++) {
                 const daysInput = document.getElementById(`leaveDays${i}`);
-                const currentRequestedDays = parseInt(daysInput?.value || 0);
+                const maxDaysDisplay = document.getElementById(`maxDays${i}`);
+                const remainingDisplay = document.getElementById(`daysRemaining${i}`);
+
+                if (!daysInput || !maxDaysDisplay || !remainingDisplay) continue;
+
+                const currentRequestedDays = parseInt(daysInput.value || 0);
 
                 // Update max days available
-                document.getElementById(`maxDays${i}`).textContent = currentRemaining;
+                maxDaysDisplay.textContent = currentRemaining;
                 daysInput.max = currentRemaining;
 
                 // If current requested days is more than available, adjust it
                 if (currentRequestedDays > currentRemaining) {
                     if (currentRemaining <= 0) {
-                        // Remove this installment if no days available
-                        const section = document.getElementById(`leaveDatesSection${i}`);
-                        if (section) {
-                            section.remove();
-                        }
+                        daysInput.value = 0;
                     } else {
                         daysInput.value = currentRemaining;
                     }
                 }
 
                 // Calculate remaining after this installment
-                const afterThisRemaining = currentRemaining - (parseInt(daysInput?.value || 0));
+                const afterThisRemaining = currentRemaining - (parseInt(daysInput.value || 0));
 
                 // Update remaining days display
-                const remainingDisplay = document.getElementById(`daysRemaining${i}`);
-                if (remainingDisplay) {
-                    remainingDisplay.textContent =
-                        `Remaining leave days after this installment: ${afterThisRemaining}`;
-                }
+                remainingDisplay.textContent = `Remaining leave days after this installment: ${afterThisRemaining}`;
 
                 currentRemaining = afterThisRemaining;
             }
 
             // Store the new remaining leave days
             remainingLeaveDays = currentRemaining >= 0 ? currentRemaining : 0;
+        }
+
+        /**
+         * Format date as YYYY-MM-DD
+         * @param {Date} date - Date to format
+         * @returns {string} - Formatted date
+         */
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        /**
+         * Format date as readable format
+         * @param {Date} date - Date to format
+         * @returns {string} - Formatted readable date
+         */
+        function formatReadableDate(date) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
         }
     </script>
 </body>
