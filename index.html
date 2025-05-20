@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Roster Schedule Form</title>
+    <style>
+        :root {
+            --navy-blue: #1e245f;
+            --green: #17956a;
+            --orange: #f2a843;
+            --light-gray: #f5f5f5;
+            --text-dark: #333;
+            --white: #fff;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+        }
+        
+        .form-container {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-header h1 {
+            color: var(--navy-blue);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-section h2 {
+            color: var(--green);
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--green);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--navy-blue);
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 2px rgba(23, 149, 106, 0.2);
+        }
+        
+        .other-field {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .required::after {
+            content: "*";
+            color: #f00;
+            margin-left: 4px;
+        }
+        
+        .leave-dates-container {
+            margin-top: 20px;
+        }
+        
+        .leave-dates-section {
+            background-color: rgba(242, 168, 67, 0.1);
+            border-left: 4px solid var(--orange);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .leave-dates-section h3 {
+            color: var(--orange);
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 12px;
+            margin: 10px 0;
+            color: #b71c1c;
+            display: none;
+            border-radius: 4px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            position: relative;
+        }
+        
+        .close-button {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        
+        .close-button:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .btn {
+            background-color: var(--green);
+            color: var(--white);
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background-color: #107a58;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .date-info {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .resumption-date {
+            font-weight: 600;
+            color: var(--navy-blue);
+            padding: 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        .days-remaining {
+            margin-top: 10px;
+            font-weight: 600;
+            color: var(--navy-blue);
+        }
+        
+        /* Success message container */
+        .success-container {
+            display: none;
+            text-align: center;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            margin-top: 20px;
+        }
+        
+        .success-container img {
+            max-width: 200px;
+            margin-bottom: 30px;
+        }
+        
+        .success-message {
+            font-size: 24px;
+            color: var(--green);
+            margin-bottom: 20px;
+        }
+        
+        .success-details {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 20px 15px;
+            }
+            
+            .form-group input,
+            .form-group select {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- KADIPA Logo -->
+    <div class="logo-container">
+        <img src="" alt="KADIPA Logo">
+    </div>
+    
+    <div class="form-container" id="formContainer">
+        <div class="form-header">
+            <h1>Leave Roster Schedule Form</h1>
+        </div>
+        
+        <form id="leaveRosterForm">
+            <!-- STAFF DATA SECTION -->
+            <div class="form-section" id="staffDataSection">
+                <h2>Staff Data</h2>
+                
+                <div class="form-group">
+                    <label for="surname" class="required">Surname</label>
+                    <input type="text" id="surname" name="surname" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="firstName" class="required">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="otherNames">Other Names</label>
+                    <input type="text" id="otherNames" name="otherNames">
+                </div>
+                
+                <div class="form-group">
+                    <label for="department" class="required">Department/Unit</label>
+                    <select id="department" name="department" required>
+                        <option value="" selected disabled>Select Department/Unit</option>
+                        <option value="Legal">Legal</option>
+                        <option value="Administration and Finance">Administration and Finance</option>
+                        <option value="Public-Private Partnership & Privatization">Public-Private Partnership & Privatization</option>
+                        <option value="ES Office">ES Office</option>
+                        <option value="Investment Intelligence">Investment Intelligence</option>
+                        <option value="Investor Relations">Investor Relations</option>
+                        <option value="Other">Other (Specify)</option>
+                    </select>
+                    
+                    <div class="other-field" id="otherDepartmentField">
+                        <input type="text" id="otherDepartment" name="otherDepartment" placeholder="Specify department">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="jobTitle" class="required">Rank/Job Title</label>
+                    <input type="text" id="jobTitle" name="jobTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gradeLevel" class="required">Grade Level</label>
+                    <input type="text" id="gradeLevel" name="gradeLevel" required>
+                </div>
+            </div>
+            
+            <!-- LEAVE INSTALLMENT SECTION -->
+            <div class="form-section" id="leaveInstallmentSection">
+                <h2>Leave Installment</h2>
+                
+                <div class="form-group">
+                    <label for="leaveInstallments" class="required">You have 30 WORKING days Annual Leave. Select Number of Annual leave Installments</label>
+                    <select id="leaveInstallments" name="leaveInstallments" required>
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- LEAVE DATES SECTION -->
+            <div id="leaveDatesSectionsContainer"></div>
+            
+            <div class="error-message" id="totalDaysErrorMessage" style="display: none;">
+                You still have <span id="remainingDaysCount">30</span> leave days available. All Leave days must be allocated.
+            </div>
+            
+            <button type="submit" class="btn btn-block">Submit Leave Roster</button>
+        </form>
+    </div>
+    
+    <!-- Success Message Container -->
+    <div class="success-container" id="successContainer">
+        <div class="success-message">2025 Leave proposal successfully submitted</div>
+        <div class="success-details">
+            Thank you for submitting your leave schedule for the year 2025.
+        </div>
+    </div>
+    
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <div class="modal-body" id="modalMessage">
+                Available leave days have been exhausted.
+            </div>
+            <button class="btn" id="confirmModal">OK</button>
+        </div>
+    </div>
+    
+    <script>
+        // Public Holidays 2025-2026
+        const publicHolidays = [
+            parseDateSafely(2025, 5, 9),  // June 9, 2025
+            parseDateSafely(2025, 5, 10), // June 10, 2025
+            parseDateSafely(2025, 5, 12), // June 12, 2025
+            parseDateSafely(2025, 9, 1),  // October 1, 2025
+            parseDateSafely(2025, 11, 25), // December 25, 2025
+            parseDateSafely(2026, 0, 1)    // January 1, 2026
+        ];
+        
+        // Initialize variables
+        let totalLeaveDays = 30;
+        let remainingLeaveDays = totalLeaveDays;
+        let leaveSections = [];
+        
+        
+function parseDateSafely(dateStr) {
+    const parts = dateStr.split('-'); // YYYY-MM-DD
+    return parseDateSafely(parts[0], parts[1] - 1, parts[2]);
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+            const departmentSelect = document.getElementById('department');
+            const otherDepartmentField = document.getElementById('otherDepartmentField');
+            const leaveInstallmentsSelect = document.getElementById('leaveInstallments');
+            const leaveDatesSectionsContainer = document.getElementById('leaveDatesSectionsContainer');
+            const errorModal = document.getElementById('errorModal');
+            const closeModal = document.getElementById('closeModal');
+            const confirmModal = document.getElementById('confirmModal');
+            const totalDaysErrorMessage = document.getElementById('totalDaysErrorMessage');
+            const remainingDaysCount = document.getElementById('remainingDaysCount');
+            
+            // Handle Department/Unit "Other" selection
+            departmentSelect.addEventListener('change', function() {
+                if (this.value === 'Other') {
+                    otherDepartmentField.style.display = 'block';
+                    document.getElementById('otherDepartment').setAttribute('required', 'required');
+                } else {
+                    otherDepartmentField.style.display = 'none';
+                    document.getElementById('otherDepartment').removeAttribute('required');
+                }
+            });
+            
+            // Handle Leave Installments change
+            leaveInstallmentsSelect.addEventListener('change', function() {
+                updateLeaveSections();
+            });
+            
+            // Close modal events
+            closeModal.addEventListener('click', function() {
+                errorModal.style.display = 'none';
+            });
+            
+            confirmModal.addEventListener('click', function() {
+                errorModal.style.display = 'none';
+            });
+            
+            // Initial render of leave sections
+            updateLeaveSections();
+            
+            // Handle form submission
+            document.getElementById('leaveRosterForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Calculate total days allocated
+                let totalAllocatedDays = 0;
+                const numInstallments = parseInt(document.getElementById('leaveInstallments').value);
+                
+                for (let i = 1; i <= numInstallments; i++) {
+                    const daysInput = document.getElementById(`leaveDays${i}`);
+                    if (daysInput) {
+                        totalAllocatedDays += parseInt(daysInput.value || 0);
+                    }
+                }
+                
+                // Check if all leave days have been allocated
+                if (totalAllocatedDays < totalLeaveDays) {
+                    const daysRemaining = totalLeaveDays - totalAllocatedDays;
+                    remainingDaysCount.textContent = daysRemaining;
+                    totalDaysErrorMessage.style.display = 'block';
+                    window.scrollTo(0, document.body.scrollHeight);
+                    return false;
+                }
+                
+                // Hide error message if it was showing
+                totalDaysErrorMessage.style.display = 'none';
+                
+                const formData = {
+                    surname: document.getElementById('surname').value,
+                    firstName: document.getElementById('firstName').value,
+                    otherNames: document.getElementById('otherNames').value,
+                    department: document.getElementById('department').value,
+                    otherDepartment: document.getElementById('otherDepartment')?.value || '',
+                    jobTitle: document.getElementById('jobTitle').value,
+                    gradeLevel: document.getElementById('gradeLevel').value,
+                    leaveInstallments: document.getElementById('leaveInstallments').value,
+                    installments: []
+                };
+                
+                for (let i = 1; i <= numInstallments; i++) {
+                    formData.installments.push({
+                        startDate: document.getElementById(`leaveStartDate${i}`).value,
+                        days: document.getElementById(`leaveDays${i}`).value,
+                        resumptionDate: document.getElementById(`resumptionDate${i}`).textContent
+                    });
+                }
+                
+                // Hide form and show success message
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('successContainer').style.display = 'block';
+                window.scrollTo(0, 0);
+                
+                // If using Google Apps Script
+                fetch("https://script.google.com/macros/s/AKfycbxcAkA0tVCdUjf1kxriXZDY4s4dKqrAcAvvTshqxepCXPUIFUxno1mG5XG4-ReGfVkg/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData)
+})
+.then(response => response.json())
+.then(data => {
+    if (!data.success) {
+        alert("There was an error submitting your form. Please try again.");
+    }
+})
+.catch(error => {
+    console.error("Error:", error);
+    alert("There was an error submitting your form.");
+});
+                }
+            );
+        });
+        
+        // Function to check if a date is a working day (Monday-Thursday, not a public holiday)
+        function isWorkingDay(date) {
+            const day = date.getDay();
+            
+            // Check if day is Monday to Thursday (1-4)
+            if (day < 1 || day > 4) {
+                return false;
+            }
+            
+            // Check if date is not a public holiday
+            return !publicHolidays.some(holiday => 
+                holiday.getDate() === date.getDate() && 
+                holiday.getMonth() === date.getMonth() && 
+                holiday.getFullYear() === date.getFullYear()
+            );
+        }
+        
+        // Function to calculate resumption date (next working day after leave)
+        function calculateResumptionDate(startDate, leaveDays) {
+            const start = parseDateSafely(startDate);
+            let workingDaysCount = 0;
+            let currentDate = parseDateSafely(start);
+            
+            while (workingDaysCount < leaveDays) {
+                currentDate.setDate(currentDate.getDate() + 1);
+                if (isWorkingDay(currentDate)) {
+                    workingDaysCount++;
+                }
+            }
+            
+            // Find next working day for resumption
+            while (!isWorkingDay(currentDate)) {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            return currentDate;
+        }
+        
+        // Function to format date as YYYY-MM-DD
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // Function to format date as readable format
+        function formatReadableDate(date) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        // Update leave sections based on selected number of installments
+        function updateLeaveSections() {
+            const container = document.getElementById('leaveDatesSectionsContainer');
+            const numInstallments = parseInt(document.getElementById('leaveInstallments').value);
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Reset leave sections array
+            leaveSections = [];
+            
+            // Reset remaining leave days
+            remainingLeaveDays = totalLeaveDays;
+            
+            // Create new leave sections
+            for (let i = 1; i <= numInstallments; i++) {
+                createLeaveSection(container, i);
+            }
+        }
+        
+        // Create a leave date section
+        function createLeaveSection(container, index) {
+            const section = document.createElement('div');
+            section.className = 'form-section leave-dates-section';
+            section.id = `leaveDatesSection${index}`;
+            
+            section.innerHTML = `
+                <h3>Leave Installment #${index}</h3>
+                
+                <div class="form-group">
+                    <label for="leaveStartDate${index}" class="required">Proposed Leave Start Date</label>
+                    <input type="date" id="leaveStartDate${index}" name="leaveStartDate${index}" required min="${formatDate(new Date())}">
+                    <div class="date-info">Select a Monday-Thursday that is not a public holiday</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="leaveDays${index}" class="required">Proposed Number of leave days for this installment</label>
+                    <input type="number" id="leaveDays${index}" name="leaveDays${index}" required min="1" max="${remainingLeaveDays}" value="1">
+                    <div class="date-info">Maximum available days: <span class="max-days" id="maxDays${index}">${remainingLeaveDays}</span></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resumptionDate${index}">Proposed Date of Resumption</label>
+                    <div class="resumption-date" id="resumptionDate${index}">Select a start date and number of days</div>
+                </div>
+                
+                <div class="days-remaining" id="daysRemaining${index}">
+                    Remaining leave days after this installment: ${remainingLeaveDays}
+                </div>
+                
+                <div class="error-message" id="errorMessage${index}">
+                    You don't have enough leave days remaining.
+                </div>
+            `;
+            
+            container.appendChild(section);
+            
+            // Store section reference
+            leaveSections.push({
+                index: index,
+                element: section,
+                daysInput: null
+            });
+            
+            // Add event listeners after the section is added to DOM
+            setTimeout(() => {
+                const startDateInput = document.getElementById(`leaveStartDate${index}`);
+                const daysInput = document.getElementById(`leaveDays${index}`);
+                
+                // Update reference
+                leaveSections[index-1].daysInput = daysInput;
+                
+                // Add event listeners
+                startDateInput.addEventListener('change', function() {
+                    updateResumptionDate(index);
+                    validateStartDate(index);
+                });
+                
+                daysInput.addEventListener('change', function() {
+                    updateResumptionDate(index);
+                    updateRemainingDays(index);
+                });
+            }, 0);
+        }
+        
+        // Validate start date is a working day
+        function validateStartDate(index) {
+            const startDateInput = document.getElementById(`leaveStartDate${index}`);
+            const selectedDate = parseDateSafely(startDateInput.value);
+            
+            if (!isWorkingDay(selectedDate)) {
+                // Show error
+                document.getElementById(`errorMessage${index}`).textContent = 
+                    "Selected date is not a working day. Please select a Monday-Thursday that is not a public holiday.";
+                document.getElementById(`errorMessage${index}`).style.display = 'block';
+                startDateInput.setCustomValidity("Please select a working day");
+            } else {
+                // Clear error
+                document.getElementById(`errorMessage${index}`).style.display = 'none';
+                startDateInput.setCustomValidity("");
+                updateResumptionDate(index);
+            }
+        }
+        
+        // Update resumption date display
+        function updateResumptionDate(index) {
+            const startDateInput = document.getElementById(`leaveStartDate${index}`);
+            const daysInput = document.getElementById(`leaveDays${index}`);
+            const resumptionDateDisplay = document.getElementById(`resumptionDate${index}`);
+            
+            if (startDateInput.value && daysInput.value) {
+                const startDate = parseDateSafely(startDateInput.value);
+                const leaveDays = parseInt(daysInput.value);
+                
+                if (isWorkingDay(startDate) && leaveDays > 0) {
+                    const resumptionDate = calculateResumptionDate(startDate, leaveDays);
+                    resumptionDateDisplay.textContent = formatReadableDate(resumptionDate);
+                }
+            }
+        }
+        
+        // Update remaining days after an installment
+        function updateRemainingDays(changedIndex) {
+            const daysInput = document.getElementById(`leaveDays${changedIndex}`);
+            const requestedDays = parseInt(daysInput.value || 0);
+            
+            // Calculate total days used in all previous installments
+            let totalUsedDays = 0;
+            for (let i = 1; i < changedIndex; i++) {
+                const input = document.getElementById(`leaveDays${i}`);
+                if (input) {
+                    totalUsedDays += parseInt(input.value || 0);
+                }
+            }
+            
+            // Calculate remaining days after this installment
+            const daysAvailableForThis = totalLeaveDays - totalUsedDays;
+            const remainingAfterThis = daysAvailableForThis - requestedDays;
+            
+            // Update remaining days display
+            document.getElementById(`daysRemaining${changedIndex}`).textContent = 
+                `Remaining leave days after this installment: ${remainingAfterThis}`;
+            
+            // Update max available for this installment
+            document.getElementById(`maxDays${changedIndex}`).textContent = daysAvailableForThis;
+            daysInput.max = daysAvailableForThis;
+            
+            // Show error if needed
+            if (requestedDays > daysAvailableForThis) {
+                document.getElementById(`errorMessage${changedIndex}`).textContent = 
+                    `You only have ${daysAvailableForThis} days available for this installment.`;
+                document.getElementById(`errorMessage${changedIndex}`).style.display = 'block';
+                daysInput.setCustomValidity("Too many days requested");
+            } else if (requestedDays < 1) {
+                document.getElementById(`errorMessage${changedIndex}`).textContent = 
+                    "You must take at least 1 day of leave.";
+                document.getElementById(`errorMessage${changedIndex}`).style.display = 'block';
+                daysInput.setCustomValidity("Minimum 1 day required");
+            } else {
+                document.getElementById(`errorMessage${changedIndex}`).style.display = 'none';
+                daysInput.setCustomValidity("");
+            }
+            
+            // Update remaining for next installments
+            updateRemainingForNextInstallments(changedIndex, remainingAfterThis);
+            
+            // Hide the total days error message when days are being adjusted
+            document.getElementById('totalDaysErrorMessage').style.display = 'none';
+        }
+        
+        // Update remaining days for all subsequent installments
+        function updateRemainingForNextInstallments(changedIndex, remainingDays) {
+            if (remainingDays < 0) {
+                // Show modal for exhausted leave days
+                document.getElementById('modalMessage').textContent = 
+                    "Available leave days have been exhausted.";
+                document.getElementById('errorModal').style.display = 'block';
+                
+                // Reset the value to maximum available
+                const daysInput = document.getElementById(`leaveDays${changedIndex}`);
+                const previousInstallmentsDays = totalLeaveDays - remainingLeaveDays;
+                daysInput.value = totalLeaveDays - previousInstallmentsDays;
+                
+                // Update again with valid value
+                updateRemainingDays(changedIndex);
+                return;
+            }
+            
+            // Update subsequent installments
+            const numInstallments = parseInt(document.getElementById('leaveInstallments').value);
+            let currentRemaining = remainingDays;
+            
+            for (let i = changedIndex + 1; i <= numInstallments; i++) {
+                const daysInput = document.getElementById(`leaveDays${i}`);
+                const currentRequestedDays = parseInt(daysInput?.value || 0);
+                
+                // Update max days available
+                document.getElementById(`maxDays${i}`).textContent = currentRemaining;
+                daysInput.max = currentRemaining;
+                
+                // If current requested days is more than available, adjust it
+                if (currentRequestedDays > currentRemaining) {
+                    if (currentRemaining <= 0) {
+                        // Remove this installment if no days available
+                        const section = document.getElementById(`leaveDatesSection${i}`);
+                        if (section) {
+                            section.remove();
+                        }
+                    } else {
+                        daysInput.value = currentRemaining;
+                    }
+                }
+                
+                // Calculate remaining after this installment
+                const afterThisRemaining = currentRemaining - (parseInt(daysInput?.value || 0));
+                
+                // Update remaining days display
+                const remainingDisplay = document.getElementById(`daysRemaining${i}`);
+                if (remainingDisplay) {
+                    remainingDisplay.textContent = 
+                        `Remaining leave days after this installment: ${afterThisRemaining}`;
+                }
+                
+                currentRemaining = afterThisRemaining;
+            }
+            
+            // Store the new remaining leave days
+            remainingLeaveDays = currentRemaining >= 0 ? currentRemaining : 0;
+        }
+    </script>
+</body>
+</html>
