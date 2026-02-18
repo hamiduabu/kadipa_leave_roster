@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <title>Leave Roster Schedule Form</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title id="pageTitle">Leave Roster Schedule Form</title>
     <style>
         :root {
             --navy-blue: #1e245f;
@@ -14,30 +14,32 @@
             --light-gray: #f5f5f5;
             --text-dark: #333;
             --white: #fff;
+            --info-blue: #2196f3;
+            --warning-orange: #ff9800;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
             background-color: var(--light-gray);
             color: var(--text-dark);
-            padding: 20px;
+            padding: 10px;
             max-width: 800px;
             margin: 0 auto;
         }
 
         .logo-container {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .logo-container img {
-            max-width: 200px;
+            max-width: 150px;
             height: auto;
         }
 
@@ -101,9 +103,9 @@
             box-shadow: 0 0 0 2px rgba(23, 149, 106, 0.2);
         }
 
-        .other-field {
-            display: none;
-            margin-top: 10px;
+        .form-group input:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
         }
 
         .required::after {
@@ -139,6 +141,94 @@
             border-radius: 4px;
         }
 
+        .warning-message {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 12px;
+            margin: 10px 0;
+            color: #e65100;
+            border-radius: 4px;
+        }
+
+        .info-message {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--info-blue);
+            padding: 12px;
+            margin: 10px 0;
+            color: #0d47a1;
+            border-radius: 4px;
+        }
+
+        .correction-notice {
+            background-color: #fff9e6;
+            border: 2px solid var(--warning-orange);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .correction-notice-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .notice-icon {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+
+        .notice-title {
+            color: var(--orange);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .notice-content {
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .notice-contact {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #ffe0b2;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.2s ease;
+        }
+
+        .contact-link:hover {
+            opacity: 0.75;
+        }
+
+        /* Tint the WhatsApp icon green */
+        .contact-link[data-type="whatsapp"] {
+            color: #25d366;
+        }
+
+        /* Color for Email icon */
+        .contact-link[data-type="email"] {
+            color: #30387a;
+        }
+
+        .contact-divider {
+            color: #ccc;
+            user-select: none;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -148,34 +238,55 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
         }
 
         .modal-content {
             background-color: var(--white);
-            margin: 15% auto;
-            padding: 20px;
+            margin: 5% auto;
+            padding: 0;
             border-radius: 8px;
-            max-width: 500px;
+            max-width: 600px;
             position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background-color: var(--navy-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
         }
 
         .close-button {
             position: absolute;
             right: 15px;
-            top: 10px;
-            font-size: 24px;
+            top: 15px;
+            font-size: 28px;
             cursor: pointer;
-            color: #aaa;
+            color: white;
+            background: none;
+            border: none;
+            transition: transform 0.2s;
         }
 
         .close-button:hover {
-            color: #333;
+            transform: scale(1.2);
         }
 
         .modal-body {
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 18px;
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            text-align: right;
         }
 
         .btn {
@@ -197,14 +308,47 @@
             background-color: #107a58;
         }
 
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
         .btn-block {
             display: block;
             width: 100%;
         }
 
+        .btn-secondary {
+            background-color: var(--navy-blue);
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #151a47;
+        }
+
+        .btn-info {
+            background-color: var(--info-blue);
+            font-size: 14px;
+            padding: 8px 16px;
+            margin-top: 10px;
+        }
+
+        .btn-info:hover {
+            background-color: #1976d2;
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+        }
+
+        .btn-reset:hover {
+            background-color: #545b62;
+        }
+
         .date-info {
             font-size: 14px;
-            color: #666;
+            color: #777;
             margin-top: 5px;
         }
 
@@ -225,636 +369,924 @@
             color: var(--navy-blue);
         }
 
-        /* Success message container */
         .success-container {
             display: none;
             text-align: center;
             background-color: var(--white);
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 40px 30px;
+            padding: 40px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background-color: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: var(--white);
+        }
+
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--green);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .psn-lookup-section {
+            background-color: rgba(30, 36, 95, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .employee-details {
+            display: none;
+            background-color: rgba(23, 149, 106, 0.05);
+            padding: 20px;
+            border-radius: 8px;
             margin-top: 20px;
         }
 
-        .success-container img {
-            max-width: 200px;
-            margin-bottom: 30px;
+        .detail-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
         }
 
-        .success-message {
-            font-size: 24px;
-            color: var(--green);
+        .detail-label {
+            font-weight: 600;
+            color: var(--navy-blue);
+        }
+
+        .detail-value {
+            color: var(--text-dark);
+        }
+
+        .handover-section {
+            background-color: #fff3e0;
+            border: 2px solid var(--orange);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .handover-section h4 {
+            color: var(--orange);
+            margin-bottom: 10px;
+        }
+
+        .installment-item {
+            background-color: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-left: 3px solid var(--green);
+            border-radius: 4px;
+        }
+
+        .holiday-info {
+            background-color: #e3f2fd;
+            border-left: 3px solid var(--info-blue);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .preview-summary {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--green);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-submitted {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .status-editable {
+            background-color: var(--info-blue);
+            color: white;
+        }
+
+        .status-locked {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .edit-info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
 
-        .success-details {
+        /* Loading Spinner Styles */
+        .spinner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner-text {
             font-size: 18px;
-            color: var(--text-dark);
-            margin-bottom: 30px;
+            color: var(--navy-blue);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .spinner-subtext {
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Leave section valid (green) state */
+        .leave-dates-section {
+            transition:
+                background-color 0.4s ease,
+                border-color 0.4s ease;
+        }
+
+        .leave-dates-section.valid {
+            background-color: rgba(23, 149, 106, 0.08) !important;
+            border-left-color: var(--green) !important;
+        }
+
+        .leave-dates-section.valid h3 {
+            color: var(--green) !important;
         }
 
         @media (max-width: 600px) {
-            .form-container {
-                padding: 20px 15px;
-            }
-
-            .form-group input,
-            .form-group select {
+            body {
                 padding: 10px;
             }
 
-            .btn {
-                padding: 10px 15px;
+            .form-container {
+                padding: 20px;
+            }
+
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .modal-content {
+                margin: 10% 5%;
+                max-width: 95%;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- KADIPA Logo -->
+    <!-- Full-Page Spinner (shared for PSN lookup and submission) -->
+    <div id="loadingSpinner" class="spinner-overlay">
+        <div class="spinner-content">
+            <div class="spinner"></div>
+            <div class="spinner-text" id="spinnerText">Please wait...</div>
+            <div class="spinner-subtext" id="spinnerSubtext">
+                Do not close this page
+            </div>
+        </div>
+    </div>
     <div class="logo-container">
-        <img src="kadipa_logo.png" alt="KADIPA Logo">
+        <img src="logo.png" alt="KADIPA Logo" onerror="this.style.display = 'none'" />
     </div>
 
-    <div class="form-container" id="formContainer">
+    <div class="form-container">
         <div class="form-header">
-            <h1>Leave Roster Schedule Form</h1>
+            <h1 id="mainHeader">Leave Roster Schedule Form</h1>
+            <p style="color: #777; margin-top: 10px">
+                Enter your PSN to begin
+            </p>
         </div>
 
-        <form id="leaveRosterForm">
-            <!-- STAFF DATA SECTION -->
-            <div class="form-section" id="staffDataSection">
-                <h2>Staff Data</h2>
+        <!-- PSN Lookup Section -->
+        <div class="psn-lookup-section">
+            <div class="form-group" id="psnInputGroup">
+                <label for="psnInput" class="required">Personnel Subhead Number (PSN)</label>
+                <input type="text" id="psnInput" placeholder="Enter your PSN" required />
+            </div>
+            <button type="button" class="btn btn-block" id="lookupBtn">
+                Begin
+            </button>
+        </div>
 
-                <div class="form-group">
-                    <label for="surname" class="required">Surname</label>
-                    <input type="text" id="surname" name="surname" required>
+        <!-- Loading indicator -->
+        <div class="loading-container" id="loadingContainer">
+            <div class="spinner"></div>
+            <p>Loading your details...</p>
+        </div>
+
+        <!-- Employee Details Display -->
+        <div class="employee-details" id="employeeDetails">
+            <h2 style="color: var(--green); margin-bottom: 20px">
+                Staff Information
+            </h2>
+
+            <!-- Existing Submission Notice -->
+            <div class="edit-info" id="existingSubmissionInfo" style="display: none">
+                <div style="
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 10px;
+                        ">
+                    <span class="status-badge" id="submissionStatus">Submitted</span>
+                    <span style="margin-left: 10px; font-weight: 600" id="statusMessage"></span>
                 </div>
-
-                <div class="form-group">
-                    <label for="firstName" class="required">First Name</label>
-                    <input type="text" id="firstName" name="firstName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="otherNames">Other Names</label>
-                    <input type="text" id="otherNames" name="otherNames">
-                </div>
-
-                <div class="form-group">
-                    <label for="department" class="required">Department/Unit</label>
-                    <select id="department" name="department" required>
-                        <option value="" selected disabled>Select Department/Unit</option>
-                        <option value="Legal">Legal</option>
-                        <option value="Administration and Finance">Administration and Finance</option>
-                        <option value="Public-Private Partnership & Privatization">Public-Private Partnership &
-                            Privatization</option>
-                        <option value="ES Office">ES Office</option>
-                        <option value="Investment Intelligence">Investment Intelligence</option>
-                        <option value="Investor Relations">Investor Relations</option>
-                        <option value="Other">Other (Specify)</option>
-                    </select>
-
-                    <div class="other-field" id="otherDepartmentField">
-                        <input type="text" id="otherDepartment" name="otherDepartment" placeholder="Specify department">
+                <p id="editInstructions"></p>
+                <!-- Contact links shown only when submission is locked.
+                         Must live in static HTML (not injected via innerHTML) so
+                         attachContactClickHandlers() can attach to them on DOMContentLoaded. -->
+                <div id="lockedContactLinks" style="display: none; margin-top: 12px;">
+                    <p style="margin-bottom: 8px; font-size: 14px;">Contact the Director Admin &amp; Finance:</p>
+                    <div class="notice-contact">
+                        <!-- Email link -->
+                        <a class="contact-link" data-encoded="070e02060b1a410e0d1a2f040b1c0841080019410108"
+                            data-key="111" data-type="email" href="#" aria-label="Send an email">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <rect x="2" y="4" width="20" height="16" rx="2" />
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
+                            <span>Send Email Message</span>
+                        </a>
+                        <span class="contact-divider">|</span>
+                        <!-- WhatsApp link -->
+                        <a class="contact-link"
+                            data-encoded="071b1b1f1c554040180e41020a405d5c5b575f56565f5d56585d5a501b0a171b52270a0303004a5d2c4a5d5f264a5d5f010a0a0b4a5d5f270a031f402c001d1d0a0c1b0600014a5d5f18061b074a5d5f02164a5d5f230a0e190a4a5d5f3d001c1b0a1d4a5d5f3c1a0d02061c1c060001"
+                            data-key="111" data-type="whatsapp" href="#" target="_blank" rel="noopener noreferrer"
+                            aria-label="Chat on WhatsApp">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="currentColor" aria-hidden="true">
+                                <path
+                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                            </svg>
+                            <span>Send WhatsApp Message</span>
+                        </a>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="jobTitle" class="required">Rank/Job Title</label>
-                    <input type="text" id="jobTitle" name="jobTitle" required>
-                </div>
-
-                <!-- <div class="form-group">
-                    <label for="gradeLevel" class="required">Grade Level</label>
-                    <input type="text" id="gradeLevel" name="gradeLevel" required>
-                </div> -->
-                <div class="form-group">
-                    <label for="gradeLevel" class="required">Grade Level (7-17)</label>
-                    <input type="number" id="gradeLevel" name="gradeLevel" min="7" max="17" required>
-                    <div class="date-info">Enter a number between 7 and 17</div>
-                </div>
+                <button type="button" class="btn btn-info" id="editScheduleBtn" style="display: none">
+                    Edit My Schedule
+                </button>
             </div>
 
-            <!-- LEAVE INSTALLMENT SECTION -->
-            <div class="form-section" id="leaveInstallmentSection">
-                <h2>Leave Installment</h2>
+            <div class="detail-row">
+                <div class="detail-label">PSN:</div>
+                <div class="detail-value" id="displayPsn"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Surname:</div>
+                <div class="detail-value" id="displaySurname"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">First Name:</div>
+                <div class="detail-value" id="displayFirstName"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Other Names:</div>
+                <div class="detail-value" id="displayOtherNames"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Unit/Department:</div>
+                <div class="detail-value" id="displayDepartment"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Rank/Job Title:</div>
+                <div class="detail-value" id="displayJobTitle"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Grade Level:</div>
+                <div class="detail-value" id="displayGradeLevel"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Available Leave Days:</div>
+                <div class="detail-value" id="displayAvailableDays" style="
+                            font-weight: 700;
+                            color: var(--green);
+                            font-size: 18px;
+                        "></div>
+            </div>
+
+            <!-- Handover Candidate Section -->
+            <div class="handover-section" id="handoverSection" style="display: none">
+                <h4>Handover Candidate</h4>
+                <p><strong id="handoverCandidateName"></strong></p>
+                <button type="button" class="btn btn-info" id="viewHandoverBtn">
+                    View Their Leave Dates
+                </button>
+            </div>
+
+            <!-- Correction Notice -->
+            <div class="correction-notice" id="correctionNotice">
+                <div class="correction-notice-header">
+                    <!--<div class="notice-icon">⚠️ℹ️</div>-->
+                    <div class="notice-icon">ℹ️</div>
+                    <div class="notice-title">
+                        Important: Please Verify Your Details
+                    </div>
+                </div>
+                <div class="notice-content">
+                    <p>
+                        If any information above is incorrect (name,
+                        department, grade level, etc.), please contact the
+                        Director Admin & Finance
+                        <strong>BEFORE</strong> submitting your proposed
+                        leave schedule.
+                    </p>
+                    <div class="notice-contact">
+                        <!-- Email link -->
+                        <a class="contact-link" data-encoded="070e02060b1a410e0d1a2f040b1c0841080019410108"
+                            data-key="111" data-type="email" href="#" aria-label="Send an email">
+                            <!-- Email SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <rect x="2" y="4" width="20" height="16" rx="2" />
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
+
+                            <span>Send Email Message</span>
+                        </a>
+
+                        <span class="contact-divider">|</span>
+
+                        <!-- WhatsApp link -->
+                        <a class="contact-link"
+                            data-encoded="071b1b1f1c554040180e41020a405d5c5b575f56565f5d56585d5a501b0a171b52270a0303004a5d2c4a5d5f264a5d5f010a0a0b4a5d5f270a031f402c001d1d0a0c1b0600014a5d5f18061b074a5d5f02164a5d5f230a0e190a4a5d5f3d001c1b0a1d4a5d5f3c1a0d02061c1c060001"
+                            data-key="111" data-type="whatsapp" href="#" target="_blank" rel="noopener noreferrer"
+                            aria-label="Chat on WhatsApp">
+                            <!-- WhatsApp SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="currentColor" aria-hidden="true">
+                                <path
+                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                            </svg>
+
+                            <span>Send WhatsApp Message</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Application Form -->
+        <form id="leaveForm" style="display: none">
+            <div class="form-section">
+                <h2>Leave Schedule</h2>
 
                 <div class="form-group">
-                    <label for="leaveInstallments" class="required">You have 30 WORKING days Annual Leave. Select Number
-                        of Annual leave Installments</label>
-                    <select id="leaveInstallments" name="leaveInstallments" required>
-                        <option value="1" selected>1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
+                    <label for="leaveInstallments" class="required">Number of Leave Installments</label>
+                    <select id="leaveInstallments" required>
+                        <!--
+                                Options are built dynamically by updateMaxInstallments()
+                                during initializeApp(), using MAX_INSTALLMENTS from the
+                                Configuration sheet. No hardcoded values needed here.
+                            -->
+                        <option value="">
+                            Select number of installments
+                        </option>
                     </select>
                 </div>
+
+                <div class="leave-dates-container" id="leaveDatesContainer"></div>
+
+                <div class="error-message" id="totalDaysErrorMessage">
+                    Error: Total leave days must equal your available leave
+                    days.
+                </div>
             </div>
 
-            <!-- LEAVE DATES SECTION -->
-            <div id="leaveDatesSectionsContainer"></div>
-
-            <div class="error-message" id="totalDaysErrorMessage" style="display: none;">
-                You still have <span id="remainingDaysCount">30</span> leave days available. All Leave days must be
-                allocated.
-            </div>
-
-            <button type="submit" class="btn btn-block">Submit Leave Schedule</button>
+            <button type="submit" class="btn btn-block" id="submitBtn">
+                Review & Submit Leave Schedule
+            </button>
         </form>
     </div>
 
-    <!-- Success Message Container -->
     <div class="success-container" id="successContainer">
-        <div class="success-message">2025 Leave proposal successfully submitted</div>
-        <div class="success-details">
-            Thank you for submitting your leave schedule for the year 2025.
+        <div class="success-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="52px"
+                height="52px">
+                <path fill="#fff"
+                    d="M 22.566406 4.730469 L 20.773438 3.511719 C 20.277344 3.175781 19.597656 3.304688 19.265625 3.796875 L 10.476563 16.757813 L 6.4375 12.71875 C 6.015625 12.296875 5.328125 12.296875 4.90625 12.71875 L 3.371094 14.253906 C 2.949219 14.675781 2.949219 15.363281 3.371094 15.789063 L 9.582031 22 C 9.929688 22.347656 10.476563 22.613281 10.96875 22.613281 C 11.460938 22.613281 11.957031 22.304688 12.277344 21.839844 L 22.855469 6.234375 C 23.191406 5.742188 23.0625 5.066406 22.566406 4.730469 Z" />
+            </svg></div>
+        <h2 id="successHeading" style="color: var(--green); margin-bottom: 20px">
+            Successfully Submitted!
+        </h2>
+        <p style="margin-bottom: 20px">
+            Your leave schedule has been recorded.
+        </p>
+        <p style="margin-bottom: 20px">
+            <strong>Status:</strong>
+            <span id="successStatusText">You can edit this within 48 hours</span>
+        </p>
+
+        <!-- Leave schedule summary -->
+        <div id="successSchedule"
+            style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 0 8px 8px 0; border-left: 4px solid var(--green);">
+        </div>
+
+        <button type="button" class="btn" onclick="window.location.reload()">
+            Close
+        </button>
+    </div>
+
+    <!-- Handover Leave Dates Modal -->
+    <div id="handoverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="handoverModalTitle">
+                    Handover Candidate's Leave Schedule
+                </h2>
+                <button class="close-button" onclick="closeHandoverModal()">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body" id="handoverModalBody">
+                <div class="loading-container" style="display: block">
+                    <div class="spinner"></div>
+                    <p>Loading leave schedule...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation/Preview Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Review Your Leave Schedule</h2>
+                <button class="close-button" onclick="closeConfirmModal()">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body" id="confirmModalBody">
+                <!-- Content populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">
+                    ← Edit
+                </button>
+                <button class="btn" id="finalSubmitBtn">
+                    Confirm & Submit →
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Error Modal -->
     <div id="errorModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="closeModal">&times;</span>
-            <div class="modal-body" id="modalMessage">
-                Available leave days have been exhausted.
+            <div class="modal-header">
+                <h2>Notice</h2>
+                <button class="close-button" onclick="closeModal()">
+                    &times;
+                </button>
             </div>
-            <button class="btn" id="confirmModal">OK</button>
+            <div class="modal-body" id="modalMessage"></div>
+            <div class="modal-footer">
+                <button class="btn btn-block" onclick="closeModal()">
+                    OK
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Improved JavaScript for Leave Roster Form
+        // CONFIGURATION - Update this with your Google Apps Script Web App URL
+        // 🎯 SINGLE URL - Deploy Code.gs once and use the SAME URL everywhere
+        const API_URL =
+            "https://script.google.com/macros/s/AKfycbxTA44NF-VlW0vpb1XUCOMr6krNlBGNbB9w42Ya9p1GhkzwPQC3zBaVpyanD2mRv-m3/exec";
 
-        // Public Holidays 2025-2026 - stored as strings for easier comparison
-        const publicHolidays = [
-            '2025-06-09', // June 9, 2025
-            '2025-06-10', // June 10, 2025
-            '2025-06-12', // June 12, 2025
-            '2025-10-01', // October 1, 2025
-            '2025-12-25', // December 25, 2025
-            '2026-01-01'  // January 1, 2026
-        ];
+        // All three point to the same unified backend
+        const STAFF_LOOKUP_URL = API_URL;
+        const LEAVE_SUBMISSION_URL = API_URL;
+        const HANDOVER_LOOKUP_URL = API_URL;
 
-        // Initialize variables
-        const totalLeaveDays = 30;
-        let remainingLeaveDays = totalLeaveDays;
-        let leaveSections = [];
+        // Configuration and holidays will be loaded from database
+        let systemConfig = {};
+        let publicHolidays = [];
+        let adjustedPublicHolidays = [];
 
-        // Wait for DOM to be fully loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Cache DOM elements
-            const elements = {
-                departmentSelect: document.getElementById('department'),
-                otherDepartmentField: document.getElementById('otherDepartmentField'),
-                otherDepartmentInput: document.getElementById('otherDepartment'),
-                leaveInstallmentsSelect: document.getElementById('leaveInstallments'),
-                leaveDatesSectionsContainer: document.getElementById('leaveDatesSectionsContainer'),
-                errorModal: document.getElementById('errorModal'),
-                closeModal: document.getElementById('closeModal'),
-                confirmModal: document.getElementById('confirmModal'),
-                totalDaysErrorMessage: document.getElementById('totalDaysErrorMessage'),
-                remainingDaysCount: document.getElementById('remainingDaysCount'),
-                leaveRosterForm: document.getElementById('leaveRosterForm'),
-                formContainer: document.getElementById('formContainer'),
-                successContainer: document.getElementById('successContainer'),
-                modalMessage: document.getElementById('modalMessage')
+        /**
+         * West Africa Time (WAT) is permanently UTC+1 with no Daylight Saving Time.
+         * The offset is a constant - no API call needed.
+         *
+         * @constant {number} WAT_OFFSET_MINUTES - UTC offset for Africa/Lagos in minutes.
+         */
+        const WAT_OFFSET_MINUTES = 60;
+
+        /**
+         * Returns today's date at midnight in West Africa Time (WAT, UTC+1).
+         *
+         * Uses `Date.now()` plus the fixed WAT offset rather than `new Date()`,
+         * making it immune to incorrect device clocks or VPN-shifted system timezones.
+         * WAT never observes DST, so the +60 minute offset is always correct.
+         *
+         * @returns {Date} Midnight of today in WAT, expressed as a local Date object.
+         */
+        function getWATToday() {
+            const watTimestampMs = Date.now() + WAT_OFFSET_MINUTES * 60000;
+            const watDate = new Date(watTimestampMs);
+            return new Date(
+                watDate.getUTCFullYear(),
+                watDate.getUTCMonth(),
+                watDate.getUTCDate(),
+            );
+        }
+
+        // State variables
+        let totalLeaveDays = 30; // Will be updated from staff data
+        let remainingLeaveDays = 30;
+        let staffData = null;
+        let departmentLeaveData = [];
+        let existingSubmission = null;
+        let isEditMode = false;
+
+        /**
+         * Loads system configuration from the backend Configuration sheet via JSONP.
+         *
+         * Converts the backend's key-value pair array into a flat object keyed by
+         * config name, e.g. `{ MAX_INSTALLMENTS: 6, ENABLE_FRIDAY_AS_WORKDAY: true }`.
+         * Date values that arrive as ISO strings are normalised to bare `YYYY-MM-DD`.
+         * A cache-buster query parameter ensures fresh values on every page load.
+         *
+         * @returns {Promise<Object>} Resolved config object, or {@link getDefaultConfig}
+         *                           if the backend is unreachable or returns an error.
+         */
+        async function loadSystemConfiguration() {
+            try {
+                const script = document.createElement("script");
+                const callbackName = "configCallback_" + Date.now();
+
+                return new Promise((resolve, reject) => {
+                    window[callbackName] = function (data) {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+
+                        if (data.success && data.config) {
+                            // Convert array to object
+                            const config = {};
+                            data.config.forEach((item) => {
+                                let value = item.value;
+
+                                // Convert date objects to strings
+                                if (
+                                    value &&
+                                    typeof value === "object" &&
+                                    value.toString
+                                ) {
+                                    // It's a Date object from Google Sheets
+                                    const dateStr = value.toString();
+                                    // Extract YYYY-MM-DD from date string
+                                    if (dateStr.includes("T")) {
+                                        value = dateStr.split("T")[0];
+                                    }
+                                }
+
+                                config[item.key] = value;
+                            });
+
+                            // console.log("Parsed configuration:", config);
+                            resolve(config);
+                        } else {
+                            resolve(getDefaultConfig());
+                        }
+                    };
+
+                    // Add cache buster to force fresh load
+                    const cacheBuster = Date.now();
+                    script.src = `${LEAVE_SUBMISSION_URL}?action=getConfig&callback=${callbackName}&_=${cacheBuster}`;
+                    script.onerror = () => {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                        resolve(getDefaultConfig());
+                    };
+
+                    document.body.appendChild(script);
+                });
+            } catch (error) {
+                // console.error("Error loading configuration:", error);
+                return getDefaultConfig();
+            }
+        }
+
+        /**
+         * Loads public holidays for the roster year from the backend
+         * PublicHolidays sheet via JSONP.
+         *
+         * Returns raw YYYY-MM-DD strings. Weekend holidays are shifted to their
+         * observed Monday by {@link adjustHolidaysForWeekends} after this call.
+         *
+         * @returns {Promise<string[]>} Array of holiday date strings,
+         *                             or `[]` if the backend is unreachable.
+         */
+        async function loadPublicHolidaysFromDB() {
+            try {
+                const year =
+                    systemConfig.LEAVE_ROSTER_YEAR ||
+                    new Date().getFullYear();
+                const script = document.createElement("script");
+                const callbackName = "holidaysCallback_" + Date.now();
+
+                return new Promise((resolve, reject) => {
+                    window[callbackName] = function (data) {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+
+                        if (data.success && data.holidays) {
+                            const dates = data.holidays.map((h) => {
+                                const d = new Date(h.date);
+                                return formatDate(d);
+                            });
+                            resolve(dates);
+                        } else {
+                            resolve([]);
+                        }
+                    };
+
+                    script.src = `${LEAVE_SUBMISSION_URL}?action=getHolidays&year=${year}&callback=${callbackName}`;
+                    script.onerror = () => {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                        resolve([]);
+                    };
+
+                    document.body.appendChild(script);
+                });
+            } catch (error) {
+                // console.error("Error loading holidays:", error);
+                return [];
+            }
+        }
+
+        /**
+         * Returns a safe fallback configuration used when the backend is unreachable.
+         *
+         * Values here mirror what should be in the Configuration sheet. If the
+         * backend becomes available on subsequent loads it will override these.
+         *
+         * @returns {{
+         *   LEAVE_ROSTER_YEAR: number,
+         *   EDIT_WINDOW_HOURS: number,
+         *   MAX_LEAVE_END_DATE: string,
+         *   DEPARTMENT_RESUMPTION_CUTOFF: string,
+         *   MAX_LATE_RESUMPTIONS_PER_DEPT: number,
+         *   DEFAULT_LEAVE_DAYS: number,
+         *   MAX_INSTALLMENTS: number,
+         *   MIN_INSTALLMENT_DAYS: number,
+         *   ENABLE_FRIDAY_AS_WORKDAY: string
+         * }}
+         */
+        function getDefaultConfig() {
+            const currentYear = new Date().getFullYear();
+            return {
+                LEAVE_ROSTER_YEAR: currentYear,
+                EDIT_WINDOW_HOURS: 48,
+                MAX_LEAVE_END_DATE: `${currentYear + 1}-01-15`,
+                DEPARTMENT_RESUMPTION_CUTOFF: `${currentYear}-12-15`,
+                MAX_LATE_RESUMPTIONS_PER_DEPT: 1,
+                DEFAULT_LEAVE_DAYS: 30,
+                MAX_INSTALLMENTS: 6,
+                MIN_INSTALLMENT_DAYS: 1,
+                ENABLE_FRIDAY_AS_WORKDAY: "TRUE",
             };
-
-            // Set up event listeners
-            setupEventListeners(elements);
-
-            // Initial render of leave sections
-            updateLeaveSections(elements);
-        });
+        }
 
         /**
-         * Set up all event listeners for the form
-         * @param {Object} elements - DOM elements
+         * Initialises the application on page load.
+         *
+         * Sequence:
+         * 1. Load system configuration from the backend (Configuration sheet).
+         * 2. Update the page title and header with the roster year.
+         * 3. Load public holidays for the year and shift weekend holidays to Monday.
+         * 4. Populate the installments `<select>` from `MAX_INSTALLMENTS` config.
+         *
+         * Falls back to {@link getDefaultConfig} values if the backend is unreachable.
+         *
+         * @returns {Promise<void>}
          */
-        function setupEventListeners(elements) {
-            // Handle Department/Unit "Other" selection
-            elements.departmentSelect.addEventListener('change', () => {
-                if (elements.departmentSelect.value === 'Other') {
-                    elements.otherDepartmentField.style.display = 'block';
-                    elements.otherDepartmentInput.setAttribute('required', 'required');
-                } else {
-                    elements.otherDepartmentField.style.display = 'none';
-                    elements.otherDepartmentInput.removeAttribute('required');
+        async function initializeApp() {
+            try {
+                // console.log("Loading system configuration...");
+
+                systemConfig = await loadSystemConfiguration();
+                // console.log("Configuration loaded:", systemConfig);
+
+                const year =
+                    systemConfig.LEAVE_ROSTER_YEAR ||
+                    new Date().getFullYear();
+                document.getElementById("pageTitle").textContent =
+                    `Leave Roster Schedule Form ${year}`;
+                document.getElementById("mainHeader").textContent =
+                    `Leave Roster Schedule Form - ${year}`;
+
+                publicHolidays = await loadPublicHolidaysFromDB();
+                // console.log(
+                //     `Loaded ${publicHolidays.length} public holidays`,
+                // );
+
+                adjustedPublicHolidays =
+                    adjustHolidaysForWeekends(publicHolidays);
+
+                const maxInstallments =
+                    parseInt(systemConfig.MAX_INSTALLMENTS) || 6;
+                updateMaxInstallments(maxInstallments);
+
+                // console.log("Application initialised successfully");
+            } catch (error) {
+                // console.error("Error initialising app:", error);
+            }
+        }
+
+        /**
+         * Rebuilds the installments `<select>` with options 1 through `max`.
+         *
+         * Called once during {@link initializeApp} using `systemConfig.MAX_INSTALLMENTS`.
+         * Replaces the entire `innerHTML` so the HTML markup only needs the placeholder
+         * option - no hardcoded values required.
+         *
+         * @param {number} max - Maximum installments allowed, sourced from configuration.
+         */
+        function updateMaxInstallments(max) {
+            const select = document.getElementById("leaveInstallments");
+            select.innerHTML =
+                '<option value="">Select number of installments</option>';
+            for (let i = 1; i <= max; i++) {
+                const option = document.createElement("option");
+                option.value = i;
+                option.textContent = `${i} Installment${i > 1 ? "s" : ""}`;
+                select.appendChild(option);
+            }
+        }
+
+        // Initialize app when page loads
+        window.addEventListener("DOMContentLoaded", initializeApp);
+
+        /**
+         * Shifts public holidays that fall on weekends to the following Monday.
+         *
+         * Matches standard Nigerian public holiday observance:
+         * - Saturday → observed the following Monday (+2 days)
+         * - Sunday   → observed the following Monday (+1 day)
+         *
+         * @param {string[]} holidays - Raw YYYY-MM-DD holiday strings from the backend.
+         * @returns {string[]} Adjusted date strings with weekend holidays moved to Monday.
+         */
+        function adjustHolidaysForWeekends(holidays) {
+            const adjusted = [];
+            holidays.forEach((holiday) => {
+                let date = new Date(holiday);
+                const day = date.getDay();
+
+                // If Saturday (6) or Sunday (0), move to Monday
+                if (day === 6) {
+                    // Saturday
+                    date.setDate(date.getDate() + 2);
+                } else if (day === 0) {
+                    // Sunday
+                    date.setDate(date.getDate() + 1);
                 }
+
+                adjusted.push(formatDate(date));
             });
-
-            // Handle Leave Installments change
-            elements.leaveInstallmentsSelect.addEventListener('change', () => {
-                updateLeaveSections(elements);
-            });
-
-            // Close modal events
-            elements.closeModal.addEventListener('click', () => {
-                elements.errorModal.style.display = 'none';
-            });
-
-            elements.confirmModal.addEventListener('click', () => {
-                elements.errorModal.style.display = 'none';
-            });
-
-            // Form submission
-            elements.leaveRosterForm.addEventListener('submit', (e) => handleFormSubmit(e, elements));
-
-            // Close modal when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === elements.errorModal) {
-                    elements.errorModal.style.display = 'none';
-                }
-            });
+            return adjusted;
         }
 
         /**
-         * Validate that no leave periods overlap with each other
-         * @param {Object} elements - DOM elements
-         * @returns {boolean} - Validation result
-         */
-        function validateNoOverlappingLeaves(elements) {
-            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
-
-            // No need to check if there's only one installment
-            if (numInstallments <= 1) {
-                return true;
-            }
-
-            // Create an array of leave periods with start and resumption dates
-            const leavePeriods = [];
-
-            for (let i = 1; i <= numInstallments; i++) {
-                const startDateInput = document.getElementById(`leaveStartDate${i}`);
-                const daysInput = document.getElementById(`leaveDays${i}`);
-
-                if (
-                    startDateInput &&
-                    startDateInput.value &&
-                    daysInput &&
-                    daysInput.value
-                ) {
-                    const startDate = new Date(startDateInput.value);
-                    const leaveDays = parseInt(daysInput.value);
-                    const resumptionDate = calculateResumptionDate(
-                        startDateInput.value,
-                        leaveDays
-                    );
-
-                    leavePeriods.push({
-                        index: i,
-                        startDate,
-                        resumptionDate,
-                    });
-                }
-            }
-
-            // Sort periods by start date
-            leavePeriods.sort((a, b) => a.startDate - b.startDate);
-
-            // Check for overlaps
-            for (let i = 0; i < leavePeriods.length - 1; i++) {
-                const currentPeriod = leavePeriods[i];
-                const nextPeriod = leavePeriods[i + 1];
-
-                // If the resumption date of the current period is after or equal to the start date of the next period
-                if (currentPeriod.resumptionDate >= nextPeriod.startDate) {
-                    // Show error
-                    const errorMessage = document.getElementById(
-                        `errorMessage${nextPeriod.index}`
-                    );
-                    errorMessage.textContent = `This leave period overlaps with installment #${currentPeriod.index}. Please select a later date.`;
-                    errorMessage.style.display = "block";
-
-                    // Focus on the problematic date field
-                    document.getElementById(`leaveStartDate${nextPeriod.index}`).focus();
-
-                    // Scroll to error
-                    document
-                        .getElementById(`leaveDatesSection${nextPeriod.index}`)
-                        .scrollIntoView({ behavior: "smooth" });
-
-                    return false;
-                }
-            }
-
-            // All periods are valid
-            return true;
-        }
-
-
-        /**
-         * Handle form submission
-         * @param {Event} e - Event object
-         * @param {Object} elements - DOM elements
-         */
-        function handleFormSubmit(e, elements) {
-            e.preventDefault();
-
-            // Validate all leave days have been allocated
-            if (!validateTotalDays(elements)) {
-                return false;
-            }
-
-            // Validate no overlapping leave periods
-            if (!validateNoOverlappingLeaves(elements)) {
-                return false;
-            }
-
-            // Build form data object
-            const formData = buildFormData(elements);
-
-            // Show loading indicator and disable submit button
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            const originalButtonText = submitButton.textContent;
-            submitButton.textContent = "Submitting...";
-            submitButton.disabled = true;
-
-            // Google Apps Script URL
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxcAkA0tVCdUjf1kxriXZDY4s4dKqrAcAvvTshqxepCXPUIFUxno1mG5XG4-ReGfVkg/exec';
-
-            // Submit the form
-            submitToGoogleScript(formData, scriptUrl)
-                .then(response => {
-                    // Show success message
-                    elements.formContainer.style.display = 'none';
-                    elements.successContainer.style.display = 'block';
-                    window.scrollTo(0, 0);
-                })
-                .catch(error => {
-                    console.error('Error submitting form:', error);
-                    showErrorModal('An error occurred while submitting the form. Please try again later.', elements);
-                })
-                .finally(() => {
-                    // Reset button state
-                    submitButton.textContent = originalButtonText;
-                    submitButton.disabled = false;
-                });
-        }
-
-        /**
-         * Validate that all leave days have been allocated
-         * @param {Object} elements - DOM elements
-         * @returns {boolean} - Validation result
-         */
-        function validateTotalDays(elements) {
-            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
-            let totalAllocatedDays = 0;
-
-            for (let i = 1; i <= numInstallments; i++) {
-                const daysInput = document.getElementById(`leaveDays${i}`);
-                if (daysInput) {
-                    totalAllocatedDays += parseInt(daysInput.value || 0);
-                }
-            }
-
-            // Check if all leave days have been allocated
-            if (totalAllocatedDays < totalLeaveDays) {
-                const daysRemaining = totalLeaveDays - totalAllocatedDays;
-                elements.remainingDaysCount.textContent = daysRemaining;
-                elements.totalDaysErrorMessage.style.display = 'block';
-                window.scrollTo(0, document.body.scrollHeight);
-                return false;
-            }
-
-            // Hide error message if it was showing
-            elements.totalDaysErrorMessage.style.display = 'none';
-            return true;
-        }
-
-        /**
-         * Build form data object from form fields
-         * @param {Object} elements - DOM elements
-         * @returns {Object} - Form data object
-         */
-        function buildFormData(elements) {
-            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
-            const formData = {
-                surname: document.getElementById('surname').value,
-                firstName: document.getElementById('firstName').value,
-                otherNames: document.getElementById('otherNames').value,
-                department: elements.departmentSelect.value,
-                otherDepartment: elements.otherDepartmentInput?.value || '',
-                jobTitle: document.getElementById('jobTitle').value,
-                gradeLevel: document.getElementById('gradeLevel').value,
-                leaveInstallments: elements.leaveInstallmentsSelect.value,
-                installments: []
-            };
-
-            for (let i = 1; i <= numInstallments; i++) {
-                formData.installments.push({
-                    startDate: document.getElementById(`leaveStartDate${i}`).value,
-                    days: document.getElementById(`leaveDays${i}`).value,
-                    resumptionDate: document.getElementById(`resumptionDate${i}`).textContent
-                });
-            }
-
-            return formData;
-        }
-
-        /**
-         * Submit form data to Google Script Web App
-         * @param {Object} data - Form data object
-         * @param {string} scriptUrl - Google Script URL
-         * @returns {Promise} - Promise resolving when submission completes
-         */
-        function submitToGoogleScript(data, scriptUrl) {
-            return new Promise((resolve, reject) => {
-                // Create hidden iframe for form submission
-                const iframe = document.createElement('iframe');
-                iframe.name = 'hidden_iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = scriptUrl;
-                form.target = 'hidden_iframe';
-
-                // Add data as JSON
-                const dataInput = document.createElement('input');
-                dataInput.type = 'hidden';
-                dataInput.name = 'data';
-                dataInput.value = JSON.stringify(data);
-                form.appendChild(dataInput);
-
-                document.body.appendChild(form);
-
-                // Set timeout to handle cases where iframe load might not fire
-                const timeoutId = setTimeout(() => {
-                    cleanup();
-                    resolve({ success: true });
-                }, 5000);
-
-                // Handle iframe events
-                iframe.onload = () => {
-                    clearTimeout(timeoutId);
-                    cleanup();
-                    resolve({ success: true });
-                };
-
-                iframe.onerror = (error) => {
-                    clearTimeout(timeoutId);
-                    cleanup();
-                    reject(error);
-                };
-
-                // Submit the form
-                form.submit();
-
-                // Cleanup function
-                function cleanup() {
-                    if (form.parentNode) form.parentNode.removeChild(form);
-                    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-                }
-            });
-        }
-
-        /**
-         * Show error modal with custom message
-         * @param {string} message - Error message
-         * @param {Object} elements - DOM elements
-         */
-        function showErrorModal(message, elements) {
-            elements.modalMessage.textContent = message;
-            elements.errorModal.style.display = 'block';
-        }
-
-        /**
-         * Update leave sections based on selected number of installments
-         * @param {Object} elements - DOM elements
-         */
-        function updateLeaveSections(elements) {
-            const container = elements.leaveDatesSectionsContainer;
-            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
-
-            // Clear container
-            container.innerHTML = '';
-
-            // Reset leave sections array
-            leaveSections = [];
-
-            // Reset remaining leave days
-            remainingLeaveDays = totalLeaveDays;
-
-            // Create new leave sections
-            for (let i = 1; i <= numInstallments; i++) {
-                createLeaveSection(container, i, elements);
-            }
-        }
-
-        /**
-         * Create a leave date section
-         * @param {HTMLElement} container - Container element
-         * @param {number} index - Section index
-         * @param {Object} elements - DOM elements
-         */
-        function createLeaveSection(container, index, elements) {
-            const section = document.createElement('div');
-            section.className = 'form-section leave-dates-section';
-            section.id = `leaveDatesSection${index}`;
-
-            section.innerHTML = `
-        <h3>Leave Installment #${index}</h3>
-        
-        <div class="form-group">
-            <label for="leaveStartDate${index}" class="required">Proposed Leave Start Date</label>
-            <input type="date" id="leaveStartDate${index}" name="leaveStartDate${index}" required min="${formatDate(new Date())}">
-            <div class="date-info">Select a Monday-Thursday that is not a public holiday</div>
-        </div>
-        
-        <div class="form-group">
-            <label for="leaveDays${index}" class="required">Proposed Number of leave days for this installment</label>
-            <input type="number" id="leaveDays${index}" name="leaveDays${index}" required min="1" max="${remainingLeaveDays}" value="1">
-            <div class="date-info">Maximum available days: <span class="max-days" id="maxDays${index}">${remainingLeaveDays}</span></div>
-        </div>
-        
-        <div class="form-group">
-            <label for="resumptionDate${index}">Proposed Date of Resumption:</label>
-            <div class="resumption-date" id="resumptionDate${index}">Select a start date and number of days above to get your resumption date</div>
-        </div>
-        
-        <div class="days-remaining" id="daysRemaining${index}">
-            Remaining leave days after this installment: ${remainingLeaveDays}
-        </div>
-        
-        <div class="error-message" id="errorMessage${index}">
-            You don't have enough leave days remaining.
-        </div>
-    `;
-
-            container.appendChild(section);
-
-            // Store section reference
-            leaveSections.push({
-                index: index,
-                element: section,
-                daysInput: null
-            });
-
-            // Add event listeners
-            requestAnimationFrame(() => {
-                const startDateInput = document.getElementById(`leaveStartDate${index}`);
-                const daysInput = document.getElementById(`leaveDays${index}`);
-
-                // Update reference
-                leaveSections[index - 1].daysInput = daysInput;
-
-                // Add event listeners
-                startDateInput.addEventListener('change', () => {
-                    validateStartDate(index, elements);
-                    updateResumptionDate(index);
-                    // Validate overlaps whenever a date changes
-                    validateNoOverlappingLeaves(elements);
-                });
-
-                daysInput.addEventListener('change', () => {
-                    updateResumptionDate(index);
-                    updateRemainingDays(index, elements);
-                });
-
-                daysInput.addEventListener('input', () => {
-                    // Immediate validation for better user experience
-                    const value = parseInt(daysInput.value || 0);
-                    const max = parseInt(daysInput.max);
-
-                    if (value > max) {
-                        daysInput.value = max;
-                    } else if (value < 1 && daysInput.value !== '') {
-                        daysInput.value = 1;
-                    }
-                });
-            });
-        }
-
-        /**
-         * Check if a date is a working day (Monday-Thursday, not a public holiday)
-         * @param {Date} date - Date to check
-         * @returns {boolean} - True if working day
+         * Returns `true` if a date is a working day under the current configuration.
+         *
+         * A working day satisfies all three conditions:
+         * 1. Falls Monday–Thursday always; or Monday–Friday when
+         *    `ENABLE_FRIDAY_AS_WORKDAY` is truthy in the Configuration sheet.
+         * 2. Is not present in {@link adjustedPublicHolidays}.
+         *
+         * Friday coercion: Google Sheets boolean cells arrive as either the boolean
+         * `true` or the string `"TRUE"`, so both are accepted.
+         *
+         * @param {Date} date - The date to test.
+         * @returns {boolean} `true` if the date is a valid working day.
          */
         function isWorkingDay(date) {
             const day = date.getDay();
+            const fridayIsWorkday =
+                systemConfig.ENABLE_FRIDAY_AS_WORKDAY === "TRUE" ||
+                systemConfig.ENABLE_FRIDAY_AS_WORKDAY === true;
+            const maxDay = fridayIsWorkday ? 5 : 4;
 
-            // Check if day is Monday to Thursday (1-4)
-            if (day < 1 || day > 4) {
-                return false;
-            }
+            if (day < 1 || day > maxDay) return false;
 
-            // Format date for comparison with public holidays array
             const formattedDate = formatDate(date);
-
-            // Check if date is not a public holiday
-            return !publicHolidays.includes(formattedDate);
+            return !adjustedPublicHolidays.includes(formattedDate);
         }
 
         /**
-         * Calculate resumption date (next working day after leave)
-         * @param {string} startDateStr - Start date string
-         * @param {number} leaveDays - Number of leave days
-         * @returns {Date} - Resumption date
+         * Returns tomorrow's date as a `YYYY-MM-DD` string in WAT.
+         *
+         * Used as the `min` attribute on all date inputs, preventing users from
+         * selecting today or any date in the past.
+         *
+         * @returns {string} Tomorrow in WAT as `"YYYY-MM-DD"`.
+         */
+        function getTomorrowWATString() {
+            const wat = getWATToday();
+            wat.setDate(wat.getDate() + 1);
+            return formatDate(wat);
+        }
+
+        /**
+         * Calculates the resumption date after a leave period.
+         *
+         * Counts forward exactly `leaveDays` working days from `startDateStr`,
+         * skipping weekends and public holidays. The resumption date is the next
+         * working day *after* the final leave day - not the last leave day itself.
+         *
+         * Example: 5-day leave starting Monday → last leave day is Friday →
+         * resumption is the following Monday (assuming no public holidays).
+         *
+         * @param {string} startDateStr - Leave start date in `"YYYY-MM-DD"` format.
+         * @param {number} leaveDays    - Number of working leave days to consume.
+         * @returns {Date}              - The resumption Date object.
          */
         function calculateResumptionDate(startDateStr, leaveDays) {
             const start = new Date(startDateStr);
@@ -877,62 +1309,811 @@
         }
 
         /**
-         * Validate start date is a working day
-         * @param {number} index - Section index
-         * @param {Object} elements - DOM elements
+         * Counts public holidays (adjusted for weekends) that fall within a date range.
+         *
+         * Iterates day-by-day from `startDate` to `endDate` inclusive, checking each
+         * date against {@link adjustedPublicHolidays}. Used in leave summary displays.
+         *
+         * @param {Date} startDate - Start of the range (inclusive).
+         * @param {Date} endDate   - End of the range (inclusive).
+         * @returns {number} Count of public holidays within the range.
          */
-        function validateStartDate(index, elements) {
-            const startDateInput = document.getElementById(`leaveStartDate${index}`);
-            const errorMessage = document.getElementById(`errorMessage${index}`);
+        function countPublicHolidays(startDate, endDate) {
+            let count = 0;
+            let currentDate = new Date(startDate);
 
-            if (!startDateInput.value) return;
+            while (currentDate <= endDate) {
+                const dateStr = formatDate(currentDate);
+                if (adjustedPublicHolidays.includes(dateStr)) {
+                    count++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
 
-            const selectedDate = new Date(startDateInput.value);
+            return count;
+        }
 
-            if (!isWorkingDay(selectedDate)) {
-                // Show error
-                errorMessage.textContent = "Selected date is not a working day. Please select a Monday-Thursday that is not a public holiday.";
-                errorMessage.style.display = 'block';
-                startDateInput.setCustomValidity("Please select a working day");
-            } else {
-                // Clear error
-                errorMessage.style.display = 'none';
-                startDateInput.setCustomValidity("");
+        /**
+         * Checks whether a proposed resumption date violates the department constraint.
+         *
+         * Only `MAX_LATE_RESUMPTIONS_PER_DEPT` people per department may have any
+         * installment resuming after `DEPARTMENT_RESUMPTION_CUTOFF`. The current
+         * user's own PSN is excluded from the count so edits don't count against them.
+         *
+         * @param {Date} resumptionDate - The proposed resumption date to evaluate.
+         * @returns {boolean} `true` if the constraint is satisfied (submission allowed).
+         */
+        function isDepartmentResumptionAllowed(resumptionDate) {
+            const departmentResumptionCutoff = new Date(
+                systemConfig.DEPARTMENT_RESUMPTION_CUTOFF || "2026-12-15",
+            );
+
+            if (resumptionDate <= departmentResumptionCutoff) {
+                return true; // OK, before cutoff
+            }
+
+            // Check how many people in department already have resumption after cutoff
+            const lateResumptionCount = departmentLeaveData.filter(
+                (entry) =>
+                    entry.department === staffData.department &&
+                    new Date(entry.resumptionDate) >
+                    departmentResumptionCutoff &&
+                    entry.psn !== staffData.psn, // Exclude current user if editing
+            ).length;
+
+            const maxLateResumptions =
+                parseInt(systemConfig.MAX_LATE_RESUMPTIONS_PER_DEPT) || 1;
+            return lateResumptionCount < maxLateResumptions;
+        }
+
+        /**
+         * Shows the full-page loading overlay with a contextual message.
+         *
+         * Blocks all user interaction until {@link hideSpinner} is called.
+         * Used for async operations where the user must wait and must not retry
+         * (e.g. PSN lookup, form submission). Always pair with `hideSpinner`
+         * in both success and error paths.
+         *
+         * @param {string} [text]    - Primary heading, e.g. `"Submitting Your Leave Schedule..."`.
+         * @param {string} [subtext] - Secondary note, e.g. `"Do not close this page"`.
+         */
+        function showSpinner(text, subtext) {
+            document.getElementById("spinnerText").textContent =
+                text || "Please wait...";
+            document.getElementById("spinnerSubtext").textContent =
+                subtext || "Do not close this page";
+            document.getElementById("loadingSpinner").style.display =
+                "flex";
+        }
+
+        /**
+         * Hides the full-page loading overlay.
+         *
+         * Must be called in every code path that called {@link showSpinner} -
+         * including `onerror` callbacks and `catch` blocks - to avoid leaving
+         * the UI permanently blocked.
+         */
+        function hideSpinner() {
+            document.getElementById("loadingSpinner").style.display =
+                "none";
+        }
+
+        /**
+         * Resets all session state and DOM back to the initial page-load condition.
+         *
+         * Called at the start of every lookupStaff() so a second lookup always
+         * begins from a clean slate. Also called directly by the "Start Over" button.
+         */
+        function resetSession() {
+            // Reset global state
+            staffData = null;
+            existingSubmission = null;
+            isEditMode = false;
+            totalLeaveDays = 30;
+            remainingLeaveDays = 30;
+            savedInstallmentData = {};
+
+            // Hide all post-lookup sections
+            document.getElementById("employeeDetails").style.display = "none";
+            document.getElementById("leaveForm").style.display = "none";
+            document.getElementById("existingSubmissionInfo").style.display = "none";
+            document.getElementById("handoverSection").style.display = "none";
+            document.getElementById("correctionNotice").style.display = "none";
+
+            // Clear staff detail display values
+            [
+                "displayPsn", "displaySurname", "displayFirstName",
+                "displayOtherNames", "displayDepartment", "displayJobTitle",
+                "displayGradeLevel", "displayAvailableDays",
+            ].forEach((id) => {
+                document.getElementById(id).textContent = "";
+            });
+
+            // Clear leave form fields and installment sections
+            document.getElementById("leaveInstallments").value = "";
+            document.getElementById("leaveDatesContainer").innerHTML = "";
+            document.getElementById("totalDaysErrorMessage").style.display = "none";
+            const submitBtn = document.getElementById("submitBtn");
+            if (submitBtn) submitBtn.textContent = "Submit Leave Schedule";
+
+            // Remove the edit notice banner if it was injected by enableEditMode
+            const editNotice = document.getElementById("editNotice");
+            if (editNotice) editNotice.remove();
+
+            // Restore PSN input group and reset button to Begin state
+            document.getElementById("psnInputGroup").style.display = "block";
+            document.getElementById("psnInput").value = "";
+            const lookupBtn = document.getElementById("lookupBtn");
+            lookupBtn.textContent = "Begin";
+            lookupBtn.className = "btn btn-block";
+            lookupBtn.onclick = null;
+
+            // Scroll to top and focus PSN input so the user is ready to go
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            document.getElementById("psnInput").focus();
+        }
+
+        /**
+         * Looks up a staff member by PSN using a JSONP request to the backend.
+         *
+         * On success: populates staff details, checks for an existing submission,
+         * shows the handover section if applicable, then smooth-scrolls the viewport
+         * to the Staff Information heading.
+         *
+         * On failure: shows an error modal; the spinner is always hidden and the
+         * button re-enabled regardless of outcome.
+         *
+         * @returns {Promise<void>}
+         */
+        async function lookupStaff() {
+            // Capture PSN before resetSession clears the input field
+            const psnInput = document.getElementById("psnInput");
+            const psn = psnInput.value.trim();
+
+            if (!psn) {
+                showErrorModal("Please enter a PSN");
+                return;
+            }
+
+            // Clear any previous session state and DOM before the new lookup
+            resetSession();
+
+            const lookupBtn = document.getElementById("lookupBtn");
+
+            // Show full-page spinner for PSN lookup
+            showSpinner(
+                "Looking Up Staff Details...",
+                "Fetching your information from the database",
+            );
+            lookupBtn.disabled = true;
+
+            try {
+                const script = document.createElement("script");
+                const callbackName = "staffLookupCallback_" + Date.now();
+
+                window[callbackName] = function (data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+
+                    hideSpinner();
+                    lookupBtn.disabled = false;
+
+                    if (data.success && data.staff) {
+                        staffData = data.staff;
+                        existingSubmission =
+                            data.existingSubmission || null;
+
+                        totalLeaveDays =
+                            parseInt(staffData.availableLeaveDays) || 30;
+                        remainingLeaveDays = totalLeaveDays;
+
+                        displayStaffDetails(staffData);
+
+                        if (existingSubmission) {
+                            handleExistingSubmission(existingSubmission);
+                            // Show correction notice only if the user can still act on it
+                            // (editable window open). For locked users, the notice is
+                            // replaced by the contact links inside existingSubmissionInfo.
+                            const isLocked =
+                                existingSubmission.status === "Locked" ||
+                                (Date.now() - new Date(existingSubmission.timestamp).getTime()) / (1000 * 60 * 60) >= (parseInt(systemConfig.EDIT_WINDOW_HOURS) || 48);
+                            if (!isLocked) {
+                                document.getElementById("correctionNotice").style.display = "block";
+                            }
+                        } else {
+                            document.getElementById(
+                                "leaveForm",
+                            ).style.display = "block";
+                            document.getElementById("correctionNotice").style.display = "block";
+                        }
+
+                        if (staffData.handoverCandidate) {
+                            const handoverSection =
+                                document.getElementById("handoverSection");
+                            document.getElementById(
+                                "handoverCandidateName",
+                            ).textContent = staffData.handoverCandidate;
+                            handoverSection.style.display = "block";
+                        }
+
+                        // Hide PSN input and transform Begin → Start Over
+                        document.getElementById("psnInputGroup").style.display = "none";
+                        lookupBtn.textContent = "↺ Start Over";
+                        lookupBtn.className = "btn btn-block btn-reset";
+                        lookupBtn.onclick = function () {
+                            resetSession();
+                        };
+
+                        // Scroll to Staff Information
+                        setTimeout(() => {
+                            const staffInfoEl =
+                                document.getElementById("employeeDetails");
+                            if (staffInfoEl) {
+                                staffInfoEl.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "start",
+                                });
+                            }
+                        }, 100);
+                    } else {
+                        showErrorModal(
+                            data.message ||
+                            "Staff not found. Please try again.",
+                        );
+                    }
+                };
+
+                script.src = `${STAFF_LOOKUP_URL}?psn=${encodeURIComponent(psn)}&callback=${callbackName}&checkExisting=true`;
+                script.onerror = function () {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    hideSpinner();
+                    lookupBtn.disabled = false;
+                    showErrorModal(
+                        "Error connecting to server. Please try again.",
+                    );
+                };
+
+                document.body.appendChild(script);
+            } catch (error) {
+                // console.error("Error looking up staff:", error);
+                hideSpinner();
+                lookupBtn.disabled = false;
+                showErrorModal(
+                    "Error connecting to server. Please try again.",
+                );
             }
         }
 
         /**
-         * Update resumption date display
-         * @param {number} index - Section index
+         * Handle existing submission
+         */
+        /**
+         * Handles the UI state when a staff member has an existing submission.
+         *
+         * Determines whether the submission is:
+         * - **Editable**: within the edit window (default 48 hours) → shows "Edit My Schedule" button
+         * - **Locked**: edit window expired or status is "Locked" → shows contact links
+         * - **Other status**: non-Submitted status (e.g., Approved, Rejected) → read-only display
+         *
+         * Updates the status badge, message, instructions text, and button/contact link visibility.
+         * Called by {@link lookupStaff} when an existing submission is found.
+         *
+         * @param {Object} submission - The existing submission object from the backend.
+         * @param {Date} submission.timestamp - Original submission timestamp.
+         * @param {string} submission.status - Current status (Submitted, Locked, etc).
+         * @param {Array<Object>} submission.installments - Installment data.
+         */
+        function handleExistingSubmission(submission) {
+            const infoDiv = document.getElementById(
+                "existingSubmissionInfo",
+            );
+            const statusBadge = document.getElementById("submissionStatus");
+            const statusMessage = document.getElementById("statusMessage");
+            const editInstructions =
+                document.getElementById("editInstructions");
+            const editBtn = document.getElementById("editScheduleBtn");
+
+            const submittedTime = new Date(submission.timestamp);
+            const editWindowHours =
+                parseInt(systemConfig.EDIT_WINDOW_HOURS) || 48;
+            // Use Date.now() for consistency with the rest of the WAT-aware
+            // date logic. Both read the system clock, but this is explicit.
+            const hoursElapsedSinceSubmission =
+                (Date.now() - submittedTime.getTime()) / (1000 * 60 * 60);
+            const isWithinEditWindow =
+                hoursElapsedSinceSubmission < editWindowHours &&
+                submission.status === "Submitted";
+
+            infoDiv.style.display = "block";
+
+            if (isWithinEditWindow) {
+                const hoursRemaining = Math.floor(
+                    editWindowHours - hoursElapsedSinceSubmission,
+                );
+                statusBadge.className = "status-badge status-editable";
+                statusBadge.textContent = "Editable";
+                statusMessage.textContent = `Expires in ${hoursRemaining} hours`;
+                editInstructions.innerHTML = `You submitted your leave schedule on <strong>${formatReadableDate(submittedTime)}</strong>.
+                    You can still edit it within the ${editWindowHours}-hour window.`;
+                editBtn.style.display = "inline-block";
+                document.getElementById("lockedContactLinks").style.display = "none";
+            } else if (
+                submission.status === "Locked" ||
+                hoursElapsedSinceSubmission >= editWindowHours
+            ) {
+                statusBadge.className = "status-badge status-locked";
+                statusBadge.textContent = "Locked";
+                statusMessage.textContent = `${editWindowHours}-hour edit window expired`;
+                editInstructions.innerHTML = `Your leave schedule was submitted on <strong>${formatReadableDate(submittedTime)}</strong>
+                    and is now locked. To make changes, please reach out:`;
+                editBtn.style.display = "none";
+                document.getElementById("lockedContactLinks").style.display = "block";
+            } else {
+                statusBadge.className = "status-badge status-submitted";
+                statusBadge.textContent = submission.status;
+                statusMessage.textContent = "";
+                editInstructions.innerHTML = `Your leave schedule was submitted on <strong>${formatReadableDate(submittedTime)}</strong>.
+                    Status: ${submission.status}`;
+                editBtn.style.display = "none";
+                document.getElementById("lockedContactLinks").style.display = "none";
+            }
+        }
+
+        /**
+         * Enables edit mode for an existing submission.
+         *
+         * Sets the `isEditMode` flag, shows the leave form, pre-fills all installment
+         * sections with data from `existingSubmission`, updates the submit button text
+         * to "Update Leave Schedule", and shows an editing notice banner.
+         *
+         * All DOM construction is synchronous - no setTimeout delays needed. The form
+         * is immediately ready for editing after this function returns.
+         *
+         * Scrolls to the Leave Schedule section so the user sees the form immediately.
+         * Called when the user clicks "Edit My Schedule" button.
+         */
+        function enableEditMode() {
+            isEditMode = true;
+
+            // Show form
+            document.getElementById("leaveForm").style.display = "block";
+
+            // Set number of installments
+            const numInst = existingSubmission.installments.length;
+            document.getElementById("leaveInstallments").value = numInst;
+
+            // Generate sections - DOM elements exist synchronously after this returns
+            generateLeaveDateSections();
+
+            // Pre-fill each installment directly - no setTimeout needed because
+            // generateLeaveDateSections() is synchronous: all elements are in the
+            // DOM the moment it returns, before any paint occurs.
+            for (let i = 0; i < numInst; i++) {
+                const inst = existingSubmission.installments[i];
+                const index = i + 1;
+
+                const startInput = document.getElementById(
+                    `leaveStartDate${index}`,
+                );
+                if (startInput && inst.startDate) {
+                    startInput.value = formatDateForInput(inst.startDate);
+                    validateStartDate(index);
+                }
+
+                const daysInput = document.getElementById(
+                    `leaveDays${index}`,
+                );
+                if (daysInput && inst.days) {
+                    daysInput.value = inst.days;
+                }
+
+                updateResumptionDate(index);
+                updateRemainingDays(index);
+            }
+
+            validateFormContinuously();
+
+            // Change button text
+            document.getElementById("submitBtn").textContent =
+                "Update Leave Schedule";
+
+            // Show edit notice - use systemConfig for the window hours (not hardcoded 48)
+            const editWindowHours =
+                parseInt(systemConfig.EDIT_WINDOW_HOURS) || 48;
+            const hoursRemaining = Math.floor(
+                editWindowHours -
+                (Date.now() - new Date(existingSubmission.timestamp).getTime()) /
+                3600000,
+            );
+
+            const form = document.getElementById("leaveForm");
+            if (form) {
+                let editNotice = document.getElementById("editNotice");
+                if (!editNotice) {
+                    editNotice = document.createElement("div");
+                    editNotice.id = "editNotice";
+                    editNotice.className = "info-message";
+                    form.insertBefore(editNotice, form.firstChild);
+                }
+                editNotice.innerHTML = `
+            <strong>✏️ Editing Mode</strong><br>
+            You can edit your submission for ${hoursRemaining} more hours.
+        `;
+            }
+
+            // Scroll to the Leave Schedule section
+            setTimeout(() => {
+                const leaveScheduleEl = document.getElementById("leaveForm");
+                if (leaveScheduleEl) {
+                    leaveScheduleEl.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                }
+            }, 50);
+        }
+
+        /**
+         * Display staff details
+         */
+        /**
+         * Populates the Staff Information section with data from the backend.
+         *
+         * Displays PSN, name, department, job title, grade level, and available leave days.
+         * Makes the employeeDetails section visible.
+         *
+         * Called by {@link lookupStaff} after a successful staff lookup.
+         *
+         * @param {Object} staff - Staff data object from the backend.
+         * @param {string} staff.psn - Staff PSN.
+         * @param {string} staff.surname - Surname.
+         * @param {string} staff.firstName - First name.
+         * @param {string} staff.otherNames - Other names (optional).
+         * @param {string} staff.department - Department/unit.
+         * @param {string} staff.jobTitle - Job title/rank.
+         * @param {string} staff.gradeLevel - Grade level.
+         * @param {number} staff.availableLeaveDays - Total leave days available.
+         */
+        function displayStaffDetails(staff) {
+            document.getElementById("displayPsn").textContent =
+                staff.psn;
+            document.getElementById("displaySurname").textContent =
+                staff.surname;
+            document.getElementById("displayFirstName").textContent =
+                staff.firstName;
+            document.getElementById("displayOtherNames").textContent =
+                staff.otherNames || "N/A";
+            document.getElementById("displayDepartment").textContent =
+                staff.department;
+            document.getElementById("displayJobTitle").textContent =
+                staff.jobTitle;
+            document.getElementById("displayGradeLevel").textContent =
+                staff.gradeLevel;
+            document.getElementById("displayAvailableDays").textContent =
+                `${staff.availableLeaveDays || 30} days`;
+
+            document.getElementById("employeeDetails").style.display =
+                "block";
+        }
+
+        /**
+         * Fetches and displays the handover candidate's leave schedule in a modal.
+         *
+         * Uses JSONP to request the candidate's installments from the backend,
+         * then formats and displays them in the handover modal. Shows a loading
+         * spinner while fetching.
+         *
+         * Called when the user clicks "View Their Leave Dates" button.
+         *
+         * @returns {Promise<void>}
+         */
+        async function viewHandoverLeave() {
+            const modal = document.getElementById("handoverModal");
+            const modalBody = document.getElementById("handoverModalBody");
+
+            modal.style.display = "block";
+            modalBody.innerHTML = `
+                <div class="loading-container" style="display: block;">
+                    <div class="spinner"></div>
+                    <p>Loading leave schedule...</p>
+                </div>
+            `;
+
+            try {
+                const script = document.createElement("script");
+                const callbackName = "handoverCallback_" + Date.now();
+
+                window[callbackName] = function (data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+
+                    if (data.success && data.leave) {
+                        let html = `<h3>${staffData.handoverCandidate}'s Leave Schedule</h3>`;
+
+                        if (
+                            data.leave.installments &&
+                            data.leave.installments.length > 0
+                        ) {
+                            html += '<div style="margin-top: 20px;">';
+                            data.leave.installments.forEach(
+                                (inst, index) => {
+                                    html += `
+                                    <div class="installment-item">
+                                        <strong>✓ Installment ${index + 1}:</strong>
+                                        ${formatReadableDate(new Date(inst.startDate))} -
+                                        ${formatReadableDate(new Date(inst.resumptionDate))}
+                                        (${inst.days} days)
+                                    </div>
+                                `;
+                                },
+                            );
+                            html += "</div>";
+                            html +=
+                                '<div class="warning-message" style="margin-top: 20px;">⚠️ Avoid these dates when planning your leave</div>';
+                        } else {
+                            html = `
+                                <div class="info-message">
+                                    <p><strong>${staffData.handoverCandidate}</strong> has not submitted their leave schedule yet.</p>
+                                    <p style="margin-top: 10px;">Please coordinate with them directly to avoid conflicts.</p>
+                                </div>
+                            `;
+                        }
+
+                        modalBody.innerHTML = html;
+                    } else {
+                        modalBody.innerHTML = `
+                            <div class="info-message">
+                                <p><strong>${staffData.handoverCandidate}</strong> has not submitted their leave schedule yet.</p>
+                                <p style="margin-top: 10px;">Please coordinate with them directly to avoid conflicts.</p>
+                            </div>
+                        `;
+                    }
+                };
+
+                script.src = `${HANDOVER_LOOKUP_URL}?action=getHandoverLeave&handoverCandidate=${encodeURIComponent(staffData.handoverCandidate)}&callback=${callbackName}`;
+                script.onerror = function () {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    modalBody.innerHTML =
+                        '<div class="error-message">Error loading leave schedule. Please try again.</div>';
+                };
+
+                document.body.appendChild(script);
+            } catch (error) {
+                // console.error("Error fetching handover leave:", error);
+                modalBody.innerHTML =
+                    '<div class="error-message">Error loading leave schedule. Please try again.</div>';
+            }
+        }
+
+        /**
+         * Close handover modal
+         */
+        /**
+         * Closes the handover candidate modal.
+         */
+        function closeHandoverModal() {
+            document.getElementById("handoverModal").style.display = "none";
+        }
+
+        /**
+         * Validates that an installment's start date is a future working day.
+         *
+         * Checks:
+         * 1. The date is after today (in WAT timezone)
+         * 2. The date is a working day (Monday-Friday, not a public holiday)
+         *
+         * Shows inline error messages and sets HTML5 custom validity state.
+         * Called on every change to a start date input field.
+         *
+         * @param {number} index - The installment number (1-based).
+         * @returns {boolean} `true` if validation passed, `false` if failed.
+         */
+        function validateStartDate(index) {
+            const startDateInput = document.getElementById(
+                `leaveStartDate${index}`,
+            );
+            const errorMessage = document.getElementById(
+                `errorMessage${index}`,
+            );
+
+            if (!startDateInput.value) return false;
+
+            const selectedDate = new Date(startDateInput.value);
+            const watToday = getWATToday();
+
+            if (selectedDate <= watToday) {
+                errorMessage.textContent =
+                    "⚠️ Start date must be a future date.";
+                errorMessage.style.display = "block";
+                startDateInput.setCustomValidity(
+                    "Please select a future date",
+                );
+                return false;
+            }
+
+            if (!isWorkingDay(selectedDate)) {
+                errorMessage.textContent =
+                    "⚠️ Selected date is not a working day (weekend or public holiday). Please select a different date.";
+                errorMessage.style.display = "block";
+                startDateInput.setCustomValidity(
+                    "Please select a working day",
+                );
+                return false;
+            }
+
+            errorMessage.style.display = "none";
+            startDateInput.setCustomValidity("");
+            return true;
+        }
+
+        /**
+         * Validates that an installment's resumption date does not exceed the system maximum.
+         *
+         * Calculates the resumption date from the start date and leave days, then checks
+         * it against `MAX_LEAVE_END_DATE` from system configuration. Shows an error if
+         * the resumption would fall after the allowed maximum.
+         *
+         * @param {string} startDate - YYYY-MM-DD start date string for this installment.
+         * @param {number} leaveDays - Number of leave days for this installment.
+         * @param {number} index - The installment number (1-based).
+         * @returns {boolean} `true` if resumption date is within allowed range, `false` otherwise.
+         */
+        function validateLeaveEndDate(startDate, leaveDays, index) {
+            const endDate = calculateResumptionDate(startDate, leaveDays);
+            const errorMessage = document.getElementById(
+                `errorMessage${index}`,
+            );
+            const maxLeaveEndDate = new Date(
+                systemConfig.MAX_LEAVE_END_DATE || "2027-01-15",
+            );
+
+            if (endDate > maxLeaveEndDate) {
+                errorMessage.textContent = `Leave cannot extend beyond ${formatReadableDate(maxLeaveEndDate)}. Your resumption date would be ${formatReadableDate(endDate)}.`;
+                errorMessage.style.display = "block";
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Validates that the department resumption constraint is not violated.
+         *
+         * Enforces the business rule: only one person per department may resume after
+         * the cutoff date (December 15, 2026 by default). Checks against existing
+         * submissions in `departmentLeaveData`.
+         *
+         * @param {string} resumptionDate - YYYY-MM-DD resumption date string for this installment.
+         * @param {number} index - The installment number (1-based).
+         * @returns {boolean} `true` if validation passed, `false` if department slot is taken.
+         */
+        function validateDepartmentResumption(resumptionDate, index) {
+            const errorMessage = document.getElementById(
+                `errorMessage${index}`,
+            );
+
+            if (!isDepartmentResumptionAllowed(resumptionDate)) {
+                errorMessage.textContent =
+                    "Only one person per department can have resumption after December 15, 2026. This slot is already taken.";
+                errorMessage.style.display = "block";
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Calculates and displays the resumption date for an installment.
+         *
+         * Reads the start date and leave days from the installment's input fields,
+         * calculates the resumption date accounting for weekends and public holidays,
+         * then updates the readonly resumption date display field.
+         *
+         * Triggers validation for department resumption constraint and overlaps.
+         * Called whenever start date or leave days change.
+         *
+         * @param {number} index - The installment number (1-based).
          */
         function updateResumptionDate(index) {
-            const startDateInput = document.getElementById(`leaveStartDate${index}`);
+            const startDateInput = document.getElementById(
+                `leaveStartDate${index}`,
+            );
             const daysInput = document.getElementById(`leaveDays${index}`);
-            const resumptionDateDisplay = document.getElementById(`resumptionDate${index}`);
+            const resumptionDateDisplay = document.getElementById(
+                `resumptionDate${index}`,
+            );
+            const holidayInfo = document.getElementById(
+                `holidayInfo${index}`,
+            );
+            const errorMessage = document.getElementById(
+                `errorMessage${index}`,
+            );
 
             if (startDateInput.value && daysInput.value) {
                 const startDate = new Date(startDateInput.value);
                 const leaveDays = parseInt(daysInput.value);
 
+                if (!validateStartDate(index)) {
+                    resumptionDateDisplay.textContent =
+                        "Invalid start date";
+                    return;
+                }
+
                 if (isWorkingDay(startDate) && leaveDays > 0) {
-                    const resumptionDate = calculateResumptionDate(startDateInput.value, leaveDays);
-                    resumptionDateDisplay.textContent = formatReadableDate(resumptionDate);
+                    const resumptionDate = calculateResumptionDate(
+                        startDateInput.value,
+                        leaveDays,
+                    );
+                    const lastLeaveDay = new Date(resumptionDate);
+                    lastLeaveDay.setDate(lastLeaveDay.getDate() - 1);
+
+                    resumptionDateDisplay.textContent =
+                        formatReadableDate(resumptionDate);
+
+                    // Count public holidays in the range
+                    const holidayCount = countPublicHolidays(
+                        startDate,
+                        lastLeaveDay,
+                    );
+                    if (holidayCount > 0) {
+                        holidayInfo.innerHTML = `ℹ️ This period includes ${holidayCount} public holiday${holidayCount > 1 ? "s" : ""}.
+                            These days are not counted as leave days.`;
+                        holidayInfo.style.display = "block";
+                    } else {
+                        holidayInfo.style.display = "none";
+                    }
+
+                    // Validate end date
+                    if (
+                        !validateLeaveEndDate(
+                            startDateInput.value,
+                            leaveDays,
+                            index,
+                        )
+                    ) {
+                        return;
+                    }
+
+                    // Validate department constraint
+                    validateDepartmentResumption(resumptionDate, index);
                 } else {
-                    resumptionDateDisplay.textContent = "Select a valid start date and number of days";
+                    resumptionDateDisplay.textContent =
+                        "Select a valid start date and number of days";
                 }
             }
         }
 
         /**
-         * Update remaining days after an installment
-         * @param {number} changedIndex - Index of changed section
-         * @param {Object} elements - DOM elements
+         * Update remaining days
          */
-        function updateRemainingDays(changedIndex, elements) {
-            const daysInput = document.getElementById(`leaveDays${changedIndex}`);
-            const maxDaysDisplay = document.getElementById(`maxDays${changedIndex}`);
-            const remainingDisplay = document.getElementById(`daysRemaining${changedIndex}`);
-            const errorMessage = document.getElementById(`errorMessage${changedIndex}`);
+        /**
+         * Recalculates and displays remaining leave days after a change to any installment.
+         *
+         * Sums all leave days entered across all visible installment sections, subtracts
+         * from the staff member's total available leave days, and updates the remaining
+         * days display in the header. Color-codes the display: green if days remain,
+         * red if exceeded.
+         *
+         * Triggers total days validation to show/hide the error message.
+         * Called whenever any installment's leave days input changes.
+         *
+         * @param {number} changedIndex - The installment number (1-based) that triggered the change.
+         */
+        function updateRemainingDays(changedIndex) {
+            const daysInput = document.getElementById(
+                `leaveDays${changedIndex}`,
+            );
+            const maxDaysDisplay = document.getElementById(
+                `maxDays${changedIndex}`,
+            );
+            const remainingDisplay = document.getElementById(
+                `daysRemaining${changedIndex}`,
+            );
+            const errorMessage = document.getElementById(
+                `errorMessage${changedIndex}`,
+            );
 
             const requestedDays = parseInt(daysInput.value || 0);
 
@@ -957,109 +2138,1115 @@
             // Validate input
             if (requestedDays > daysAvailableForThis) {
                 errorMessage.textContent = `You only have ${daysAvailableForThis} days available for this installment.`;
-                errorMessage.style.display = 'block';
+                errorMessage.style.display = "block";
                 daysInput.setCustomValidity("Too many days requested");
-
-                // Auto-correct value
                 daysInput.value = daysAvailableForThis;
-                // Re-calculate with corrected value
-                updateRemainingDays(changedIndex, elements);
+                updateRemainingDays(changedIndex);
                 return;
-
             } else if (requestedDays < 1) {
-                errorMessage.textContent = "You must take at least 1 day of leave.";
-                errorMessage.style.display = 'block';
+                errorMessage.textContent =
+                    "You must take at least 1 day of leave.";
+                errorMessage.style.display = "block";
                 daysInput.setCustomValidity("Minimum 1 day required");
             } else {
-                errorMessage.style.display = 'none';
                 daysInput.setCustomValidity("");
             }
 
             // Update remaining for next installments
-            updateRemainingForNextInstallments(changedIndex, remainingAfterThis, elements);
+            updateRemainingForNextInstallments(
+                changedIndex,
+                remainingAfterThis,
+            );
 
-            // Hide the total days error message when days are being adjusted
-            elements.totalDaysErrorMessage.style.display = 'none';
+            // Check if all days are exhausted
+            validateTotalDays();
         }
 
         /**
-         * Update remaining days for all subsequent installments
-         * @param {number} changedIndex - Index of changed section
-         * @param {number} remainingDays - Remaining days
-         * @param {Object} elements - DOM elements
+         * Validate that all leave days are exhausted
          */
-        function updateRemainingForNextInstallments(changedIndex, remainingDays, elements) {
-            if (remainingDays < 0) {
-                // This shouldn't happen now with our validation, but keep as a safety check
-                showErrorModal("Available leave days have been exhausted.", elements);
+        /**
+         * Validates that the total leave days entered equals the staff member's available days.
+         *
+         * Sums all leave days across all visible installments and compares to `totalLeaveDays`.
+         * Shows/hides the total days error message and disables/enables the submit button.
+         * The user cannot submit unless total days exactly match their entitlement.
+         *
+         * @returns {boolean} `true` if total equals available days, `false` otherwise.
+         */
+        function validateTotalDays() {
+            const numInstallments = parseInt(
+                document.getElementById("leaveInstallments").value,
+            );
+            let totalUsed = 0;
 
-                // Reset the value to maximum available
-                const daysInput = document.getElementById(`leaveDays${changedIndex}`);
-                const previousInstallmentsDays = totalLeaveDays - remainingLeaveDays;
-                daysInput.value = totalLeaveDays - previousInstallmentsDays;
-
-                // Update again with valid value
-                updateRemainingDays(changedIndex, elements);
-                return;
+            for (let i = 1; i <= numInstallments; i++) {
+                const daysInput = document.getElementById(`leaveDays${i}`);
+                if (daysInput && daysInput.value) {
+                    totalUsed += parseInt(daysInput.value);
+                }
             }
 
-            // Update subsequent installments
-            const numInstallments = parseInt(elements.leaveInstallmentsSelect.value);
+            const errorMsg = document.getElementById(
+                "totalDaysErrorMessage",
+            );
+            const submitBtn = document.getElementById("submitBtn");
+
+            if (totalUsed !== totalLeaveDays && totalUsed > 0) {
+                errorMsg.textContent = `All ${totalLeaveDays} leave days must be exhausted. You have used ${totalUsed} days. ${totalLeaveDays - totalUsed} days remaining.`;
+                errorMsg.style.display = "block";
+                submitBtn.disabled = true;
+                return false;
+            } else {
+                errorMsg.style.display = "none";
+                submitBtn.disabled = false;
+                return true;
+            }
+        }
+
+        /**
+         * Validate that installments don't overlap
+         */
+        /**
+         * Marks an installment section as valid by adding a green "valid" CSS class.
+         *
+         * The CSS class changes the section's visual state to show it passed validation.
+         * Called after all validation checks pass for an installment.
+         *
+         * @param {number} index - The installment number (1-based).
+         */
+        function markSectionValid(index) {
+            const sections = document.querySelectorAll(
+                "#leaveDatesContainer .leave-dates-section",
+            );
+            if (sections[index - 1])
+                sections[index - 1].classList.add("valid");
+        }
+
+        /**
+         * Marks an installment section as invalid by removing the green "valid" CSS class.
+         *
+         * Returns the section to its default visual state (orange/default).
+         * Called when any validation check fails for an installment.
+         *
+         * @param {number} index - The installment number (1-based).
+         */
+        function markSectionInvalid(index) {
+            const sections = document.querySelectorAll(
+                "#leaveDatesContainer .leave-dates-section",
+            );
+            if (sections[index - 1])
+                sections[index - 1].classList.remove("valid");
+        }
+
+        /**
+         * Validates that no two installments have overlapping date ranges.
+         *
+         * Gathers all installment start and end dates, then checks each pair for overlap.
+         * Two ranges overlap if one starts before the other ends. Shows an inline error
+         * message on the first overlapping installment found.
+         *
+         * @returns {boolean} `true` if no overlaps exist, `false` if any overlap detected.
+         */
+        function validateInstallmentsNoOverlap() {
+            const numInstallments = parseInt(
+                document.getElementById("leaveInstallments").value,
+            );
+            const installments = [];
+
+            for (let i = 1; i <= numInstallments; i++) {
+                const startDate = document.getElementById(
+                    `leaveStartDate${i}`,
+                ).value;
+                const days = parseInt(
+                    document.getElementById(`leaveDays${i}`).value,
+                );
+
+                if (startDate && days) {
+                    const start = new Date(startDate);
+                    const resumption = calculateResumptionDate(
+                        startDate,
+                        days,
+                    );
+                    const end = new Date(resumption);
+                    end.setDate(end.getDate() - 1);
+
+                    installments.push({
+                        index: i,
+                        start: start,
+                        end: end,
+                        startStr: formatReadableDate(start),
+                        endStr: formatReadableDate(end),
+                    });
+                }
+            }
+
+            // Clear previous overlap messages
+            for (let i = 1; i <= numInstallments; i++) {
+                const errMsg = document.getElementById(`errorMessage${i}`);
+                if (errMsg && errMsg.dataset.isOverlap === "true") {
+                    errMsg.style.display = "none";
+                    errMsg.dataset.isOverlap = "";
+                }
+            }
+
+            for (let i = 0; i < installments.length; i++) {
+                for (let j = i + 1; j < installments.length; j++) {
+                    const firstInstallment = installments[i];
+                    const secondInstallment = installments[j];
+
+                    if (
+                        firstInstallment.start <= secondInstallment.end &&
+                        secondInstallment.start <= firstInstallment.end
+                    ) {
+                        const msg = `⚠️ Installments ${firstInstallment.index} and ${secondInstallment.index} have intersecting dates. Please select non-overlapping date ranges.`;
+                        [
+                            firstInstallment.index,
+                            secondInstallment.index,
+                        ].forEach((installment) => {
+                            const err = document.getElementById(
+                                `errorMessage${installment}`,
+                            );
+                            if (err) {
+                                err.textContent = msg;
+                                err.style.display = "block";
+                                err.dataset.isOverlap = "true";
+                            }
+                            markSectionInvalid(installment);
+                        });
+                        return { valid: false };
+                    }
+                }
+            }
+
+            return { valid: true };
+        }
+
+        /**
+         * Continuously validate all installments: colors sections, shows inline errors, enables/disables submit
+         */
+        /**
+         * Runs full form validation across all installments and marks sections valid/invalid.
+         *
+         * Called continuously during form interaction (via setTimeout) to provide real-time
+         * validation feedback. Validates:
+         * - Start dates (future, working days)
+         * - Leave end dates (within system maximum)
+         * - Department resumption constraints
+         * - No overlapping installments
+         *
+         * Updates visual state (green/orange sections) based on validation results.
+         * Does not block form interaction - user can continue editing while validation runs.
+         */
+        function validateFormContinuously() {
+            const submitBtn = document.getElementById("submitBtn");
+            if (!submitBtn) return;
+
+            const numInstallments =
+                parseInt(
+                    document.getElementById("leaveInstallments").value,
+                ) || 0;
+            let formValid = true;
+            const watToday = getWATToday();
+
+            for (let i = 1; i <= numInstallments; i++) {
+                const startInput = document.getElementById(
+                    `leaveStartDate${i}`,
+                );
+                const daysInput = document.getElementById(`leaveDays${i}`);
+                const errorMsg = document.getElementById(
+                    `errorMessage${i}`,
+                );
+                let sectionValid = true;
+
+                // Skip clearing overlap messages - handled by validateInstallmentsNoOverlap
+                if (errorMsg && errorMsg.dataset.isOverlap === "true") {
+                    sectionValid = false;
+                    formValid = false;
+                    continue;
+                }
+
+                if (
+                    !startInput ||
+                    !startInput.value ||
+                    !daysInput ||
+                    !daysInput.value
+                ) {
+                    sectionValid = false;
+                    formValid = false;
+                } else {
+                    const date = new Date(startInput.value);
+
+                    if (date <= watToday) {
+                        if (errorMsg) {
+                            errorMsg.textContent =
+                                "⚠️ Start date must be a future date.";
+                            errorMsg.style.display = "block";
+                        }
+                        sectionValid = false;
+                        formValid = false;
+                    } else if (!isWorkingDay(date)) {
+                        if (errorMsg) {
+                            errorMsg.textContent =
+                                "⚠️ This date is not a working day (weekend or public holiday). Please select a different date.";
+                            errorMsg.style.display = "block";
+                        }
+                        sectionValid = false;
+                        formValid = false;
+                    } else {
+                        const resumption = calculateResumptionDate(
+                            startInput.value,
+                            parseInt(daysInput.value),
+                        );
+                        const maxDate = new Date(
+                            systemConfig.MAX_LEAVE_END_DATE || "2027-01-15",
+                        );
+                        if (resumption > maxDate) {
+                            if (errorMsg) {
+                                errorMsg.textContent = `⚠️ Leave cannot extend beyond ${formatReadableDate(maxDate)}.`;
+                                errorMsg.style.display = "block";
+                            }
+                            sectionValid = false;
+                            formValid = false;
+                        } else {
+                            if (errorMsg) {
+                                errorMsg.style.display = "none";
+                            }
+                        }
+                    }
+                }
+
+                if (sectionValid) markSectionValid(i);
+                else markSectionInvalid(i);
+            }
+
+            if (!validateTotalDays()) formValid = false;
+
+            if (numInstallments > 1) {
+                const overlapCheck = validateInstallmentsNoOverlap();
+                if (!overlapCheck.valid) formValid = false;
+            }
+
+            submitBtn.disabled = !formValid;
+            submitBtn.style.opacity = formValid ? "1" : "0.6";
+            submitBtn.style.cursor = formValid ? "pointer" : "not-allowed";
+            submitBtn.title = formValid
+                ? ""
+                : "Please complete all fields correctly before submitting";
+        }
+
+        /**
+         * Update remaining days for subsequent installments
+         */
+        /**
+         * Updates the remaining days display for all subsequent installments after a change.
+         *
+         * When an installment's leave days value changes, this recalculates and updates the
+         * "You have X days remaining" text shown above each subsequent installment section.
+         * The display shows cumulative remaining days after accounting for all previous installments.
+         *
+         * @param {number} changedIndex - The installment number (1-based) that triggered the change.
+         */
+        function updateRemainingForNextInstallments(
+            changedIndex,
+            remainingDays,
+        ) {
+            const numInstallments = parseInt(
+                document.getElementById("leaveInstallments").value,
+            );
             let currentRemaining = remainingDays;
 
             for (let i = changedIndex + 1; i <= numInstallments; i++) {
                 const daysInput = document.getElementById(`leaveDays${i}`);
-                const maxDaysDisplay = document.getElementById(`maxDays${i}`);
-                const remainingDisplay = document.getElementById(`daysRemaining${i}`);
+                const maxDaysDisplay = document.getElementById(
+                    `maxDays${i}`,
+                );
+                const remainingDisplay = document.getElementById(
+                    `daysRemaining${i}`,
+                );
 
-                if (!daysInput || !maxDaysDisplay || !remainingDisplay) continue;
+                if (!daysInput || !maxDaysDisplay || !remainingDisplay)
+                    continue;
 
                 const currentRequestedDays = parseInt(daysInput.value || 0);
 
-                // Update max days available
                 maxDaysDisplay.textContent = currentRemaining;
                 daysInput.max = currentRemaining;
 
-                // If current requested days is more than available, adjust it
                 if (currentRequestedDays > currentRemaining) {
-                    if (currentRemaining <= 0) {
-                        daysInput.value = 0;
-                    } else {
-                        daysInput.value = currentRemaining;
-                    }
+                    daysInput.value =
+                        currentRemaining > 0 ? currentRemaining : 0;
                 }
 
-                // Calculate remaining after this installment
-                const afterThisRemaining = currentRemaining - (parseInt(daysInput.value || 0));
-
-                // Update remaining days display
+                const afterThisRemaining =
+                    currentRemaining - parseInt(daysInput.value || 0);
                 remainingDisplay.textContent = `Remaining leave days after this installment: ${afterThisRemaining}`;
 
                 currentRemaining = afterThisRemaining;
             }
 
-            // Store the new remaining leave days
-            remainingLeaveDays = currentRemaining >= 0 ? currentRemaining : 0;
+            remainingLeaveDays =
+                currentRemaining >= 0 ? currentRemaining : 0;
+        }
+
+        // Storage for preserving installment data when changing number of installments
+        let savedInstallmentData = {};
+
+        /**
+         * Saves current installment data before regenerating sections.
+         *
+         * When the user changes the number of installments, the DOM sections are rebuilt
+         * from scratch. This function preserves the start date and leave days from all
+         * existing installment sections so they can be restored after regeneration.
+         *
+         * Stored in the `savedInstallmentData` global object keyed by installment number.
+         * Called by `generateLeaveDateSections` before clearing the container.
+         */
+        function saveCurrentInstallmentData() {
+            savedInstallmentData = {};
+
+            for (let i = 1; i <= 6; i++) {
+                const startInput = document.getElementById(
+                    `leaveStartDate${i}`,
+                );
+                const daysInput = document.getElementById(`leaveDays${i}`);
+
+                if (startInput && daysInput) {
+                    savedInstallmentData[i] = {
+                        startDate: startInput.value,
+                        days: daysInput.value,
+                    };
+                }
+            }
         }
 
         /**
-         * Format date as YYYY-MM-DD
-         * @param {Date} date - Date to format
-         * @returns {string} - Formatted date
+         * Restores previously saved installment data after sections are regenerated.
+         *
+         * Called directly (synchronously) at the end of {@link generateLeaveDateSections}
+         * after the DOM loop completes. No setTimeout is needed - generateLeaveDateSections
+         * is synchronous, so every input element exists in the DOM before this runs.
+         *
+         * Reads from the `savedInstallmentData` global object and fills matching input fields.
+         */
+        function restoreSavedInstallmentData() {
+            const numInstallments = parseInt(
+                document.getElementById("leaveInstallments").value,
+            );
+
+            for (let i = 1; i <= numInstallments; i++) {
+                if (savedInstallmentData[i]) {
+                    const startInput = document.getElementById(
+                        `leaveStartDate${i}`,
+                    );
+                    const daysInput = document.getElementById(
+                        `leaveDays${i}`,
+                    );
+
+                    if (startInput && savedInstallmentData[i].startDate) {
+                        startInput.value = savedInstallmentData[i].startDate;
+                        validateStartDate(i);
+                    }
+                    if (daysInput && savedInstallmentData[i].days) {
+                        daysInput.value = savedInstallmentData[i].days;
+                    }
+                    updateResumptionDate(i);
+                    updateRemainingDays(i);
+                }
+            }
+            validateFormContinuously();
+        }
+
+        /**
+         * Generates the installment input sections dynamically based on the selected number.
+         *
+         * Workflow:
+         * 1. Saves current data from existing sections (if any) via {@link saveCurrentInstallmentData}
+         * 2. Clears the container completely
+         * 3. Creates N new sections with input fields, labels, and event listeners
+         * 4. Restores saved data to matching sections via {@link restoreSavedInstallmentData}
+         * 5. Kicks off continuous validation
+         *
+         * Called whenever the "Number of Leave Installments" dropdown value changes.
+         * All DOM construction is synchronous - no setTimeout delays needed.
+         */
+        function generateLeaveDateSections() {
+            // Save current data before clearing
+            saveCurrentInstallmentData();
+
+            const container = document.getElementById(
+                "leaveDatesContainer",
+            );
+            const numInstallments = parseInt(
+                document.getElementById("leaveInstallments").value,
+            );
+
+            container.innerHTML = "";
+            remainingLeaveDays = totalLeaveDays;
+
+            for (let i = 1; i <= numInstallments; i++) {
+                const section = document.createElement("div");
+                section.className = "leave-dates-section";
+                section.innerHTML = `
+                    <h3>Installment ${i}</h3>
+                    <div class="form-group">
+                        <label for="leaveStartDate${i}" class="required">Leave Start Date</label>
+                        <input type="date" id="leaveStartDate${i}" required
+                               min="2026-01-01" max="2027-01-15">
+                        <div class="date-info">
+                            ⚠️ Select a working day (Monday-Friday, excluding public holidays)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="leaveDays${i}" class="required">Number of Leave Days (Max: <span id="maxDays${i}">${totalLeaveDays}</span>)</label>
+                        <input type="number" id="leaveDays${i}" min="1" max="${totalLeaveDays}" required>
+                    </div>
+                    <div class="error-message" id="errorMessage${i}"></div>
+                    <div class="date-info">
+                        <strong>Resumption Date: </strong>
+                        <span class="resumption-date" id="resumptionDate${i}">Select start date and days</span>
+                    </div>
+                    <div class="holiday-info" id="holidayInfo${i}" style="display: none;"></div>
+                    <div class="days-remaining" id="daysRemaining${i}">
+                        Remaining leave days after this installment: ${totalLeaveDays}
+                    </div>
+                `;
+                container.appendChild(section);
+
+                // Add event listeners
+                const startDateInput = document.getElementById(
+                    `leaveStartDate${i}`,
+                );
+
+                // Set min to tomorrow in WAT (cannot select today or earlier) and max from config
+                const year =
+                    parseInt(systemConfig.LEAVE_ROSTER_YEAR) ||
+                    new Date().getFullYear();
+                const maxDate =
+                    systemConfig.MAX_LEAVE_END_DATE || `${year + 1}-01-15`;
+                startDateInput.setAttribute("min", getTomorrowWATString());
+                startDateInput.setAttribute("max", maxDate);
+
+                // Validate on change
+                startDateInput.addEventListener("change", () => {
+                    validateStartDate(i);
+                    updateResumptionDate(i);
+                    validateFormContinuously();
+                });
+
+                // Also validate on input (when user types or selects)
+                startDateInput.addEventListener("input", () => {
+                    const dateValue = startDateInput.value;
+                    if (!dateValue) return;
+                    const errorMsg = document.getElementById(
+                        `errorMessage${i}`,
+                    );
+                    const selectedDate = new Date(dateValue);
+                    const watToday = getWATToday();
+
+                    if (selectedDate <= watToday) {
+                        errorMsg.textContent =
+                            "⚠️ Start date must be a future date.";
+                        errorMsg.style.display = "block";
+                        startDateInput.value = "";
+                        return;
+                    }
+                    if (!isWorkingDay(selectedDate)) {
+                        errorMsg.textContent =
+                            "⚠️ This date is not a working day (weekend or public holiday). Please select a different date.";
+                        errorMsg.style.display = "block";
+                        startDateInput.value = "";
+                        return;
+                    }
+                    errorMsg.style.display = "none";
+                    validateFormContinuously();
+                });
+
+                document
+                    .getElementById(`leaveDays${i}`)
+                    .addEventListener("input", () => {
+                        updateRemainingDays(i);
+                        updateResumptionDate(i);
+                        validateFormContinuously();
+                    });
+            }
+
+            // Restore saved data
+            restoreSavedInstallmentData();
+        }
+
+        /**
+         * Show confirmation modal before submission
+         */
+        /**
+         * Shows the confirmation modal with a summary of the leave schedule before submission.
+         *
+         * Reads all installment data from the form, formats it into a readable summary with
+         * dates displayed in long format (e.g., "Friday, 26 June 2026"), and populates the
+         * confirmation modal. The user must click "Confirm & Submit" to proceed with submission.
+         *
+         * Prevents the form's default submit behavior - submission is handled by
+         * {@link submitLeaveForm} when the user confirms.
+         *
+         * @param {Event} event - The form submit event to prevent default submission.
+         */
+        function showConfirmationModal(event) {
+            event.preventDefault();
+
+            if (!staffData) {
+                showErrorModal(
+                    "Staff data not loaded. Please look up your PSN first.",
+                );
+                return;
+            }
+
+            // Validate all days are exhausted
+            if (!validateTotalDays()) {
+                showErrorModal(
+                    `All ${totalLeaveDays} leave days must be used. Please adjust your installments.`,
+                );
+                return;
+            }
+
+            const numInstallments = parseInt(
+                document.getElementById("leaveInstallments").value,
+            );
+            const installments = [];
+            let totalDays = 0;
+            let hasLateResumption = false;
+
+            // Collect and validate installment data
+            for (let i = 1; i <= numInstallments; i++) {
+                const startDate = document.getElementById(
+                    `leaveStartDate${i}`,
+                ).value;
+                const days = parseInt(
+                    document.getElementById(`leaveDays${i}`).value,
+                );
+
+                if (!startDate || !days) {
+                    showErrorModal(
+                        `Please complete all fields for Installment ${i}`,
+                    );
+                    return;
+                }
+
+                const resumptionDate = calculateResumptionDate(
+                    startDate,
+                    days,
+                );
+                const lastLeaveDay = new Date(resumptionDate);
+                lastLeaveDay.setDate(lastLeaveDay.getDate() - 1);
+
+                const holidayCount = countPublicHolidays(
+                    new Date(startDate),
+                    lastLeaveDay,
+                );
+
+                const departmentResumptionCutoff = new Date(
+                    systemConfig.DEPARTMENT_RESUMPTION_CUTOFF ||
+                    "2026-12-15",
+                );
+                if (resumptionDate > departmentResumptionCutoff) {
+                    hasLateResumption = true;
+                }
+
+                installments.push({
+                    startDate: startDate,
+                    days: days,
+                    resumptionDate: formatDate(resumptionDate),
+                    holidayCount: holidayCount,
+                });
+
+                totalDays += days;
+            }
+
+            // Build preview HTML
+            let previewHTML = `
+                <div class="preview-summary">
+                    <div class="preview-header">
+                        <div>
+                            <h3>${staffData.firstName} ${staffData.surname}</h3>
+                            <p style="color: #777;">PSN: ${staffData.psn} | ${staffData.department}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 700; color: var(--green);">${totalDays} days</div>
+                            <div style="font-size: 14px; color: #777;">Total Leave</div>
+                        </div>
+                    </div>
+            `;
+
+            installments.forEach((inst, index) => {
+                const startDateObj = new Date(inst.startDate);
+                const resumptionDateObj = new Date(inst.resumptionDate);
+                const lastLeaveDay = new Date(resumptionDateObj);
+                lastLeaveDay.setDate(lastLeaveDay.getDate() - 1);
+
+                previewHTML += `
+                    <div class="installment-item">
+                        <strong>Installment ${index + 1}:</strong><br>
+                        <span style="color: #777;">Leave: ${formatReadableDate(startDateObj)} to ${formatReadableDate(lastLeaveDay)}</span><br>
+                        <span style="color: var(--green); font-weight: 600;">Resume: ${formatReadableDate(resumptionDateObj)}</span><br>
+                        <span style="color: #777;">Duration: ${inst.days} working days</span>
+                        ${inst.holidayCount > 0 ? `<br><span style="color: var(--info-blue);">ℹ️ Includes ${inst.holidayCount} public holiday${inst.holidayCount > 1 ? "s" : ""}</span>` : ""}
+                    </div>
+                `;
+            });
+
+            // Check for overlapping installments
+            const overlapCheck = validateInstallmentsNoOverlap();
+            if (!overlapCheck.valid) {
+                showErrorModal(overlapCheck.message);
+                return;
+            }
+
+            if (hasLateResumption) {
+                previewHTML += `
+                    <div class="warning-message" style="margin-top: 15px;">
+                        <strong>⚠️ Late Resumption Alert:</strong><br>
+                        One or more of your resumption dates falls after December 15, 2026.
+                        Please note that only one (1) staff per Unit/Department is allowed to resume after this date.
+                    </div>
+                `;
+            }
+
+            if (staffData.handoverCandidate) {
+                previewHTML += `
+                    <div class="info-message" style="margin-top: 15px;">
+                        <strong>Handover Candidate:</strong> ${staffData.handoverCandidate}<br>
+                        Your dates will be validated against their schedule to ensure no conflicts.
+                    </div>
+                `;
+            }
+
+            previewHTML += `</div>`;
+
+            document.getElementById("confirmModalBody").innerHTML =
+                previewHTML;
+            document.getElementById("confirmModal").style.display = "block";
+        }
+
+        /**
+         * Closes the confirmation modal without submitting.
+         *
+         * Hides the modal and returns the user to the form for further edits.
+         */
+        function closeConfirmModal() {
+            document.getElementById("confirmModal").style.display = "none";
+        }
+
+        /**
+         * Submits the leave schedule form to the backend via JSONP.
+         *
+         * Gathers all installment data, constructs the submission payload, and sends it
+         * to the Apps Script backend. Handles both new submissions and edits (controlled
+         * by the `isEditMode` flag and `originalTimestamp` field).
+         *
+         * On success: resets the session and shows the success container with appropriate message.
+         * On failure: shows an error modal with the backend's error message.
+         *
+         * Uses JSONP to avoid CORS issues. The payload is URL-encoded and passed as a
+         * query parameter. The backend validates and writes to the LeaveRoster sheet.
+         *
+         * @returns {Promise<void>}
+         */
+        async function submitLeaveForm() {
+            const numInstallments = parseInt(
+                document.getElementById("leaveInstallments").value,
+            );
+            const installments = [];
+
+            // Collect installment data
+            for (let i = 1; i <= numInstallments; i++) {
+                const startDate = document.getElementById(
+                    `leaveStartDate${i}`,
+                ).value;
+                const days = parseInt(
+                    document.getElementById(`leaveDays${i}`).value,
+                );
+                const resumptionDate = calculateResumptionDate(
+                    startDate,
+                    days,
+                );
+
+                installments.push({
+                    startDate: startDate,
+                    days: days,
+                    resumptionDate: formatDate(resumptionDate),
+                });
+            }
+
+            // Prepare submission data
+            const submissionData = {
+                psn: staffData.psn,
+                surname: staffData.surname,
+                firstName: staffData.firstName,
+                otherNames: staffData.otherNames,
+                department: staffData.department,
+                jobTitle: staffData.jobTitle,
+                gradeLevel: staffData.gradeLevel,
+                handoverCandidate: staffData.handoverCandidate || "",
+                availableLeaveDays: staffData.availableLeaveDays,
+                leaveInstallments: numInstallments,
+                installments: installments,
+                isEdit: isEditMode,
+                originalTimestamp: existingSubmission
+                    ? existingSubmission.timestamp
+                    : null,
+            };
+
+            // Close confirmation modal
+            closeConfirmModal();
+
+            // Show full-page spinner for submission
+            showSpinner(
+                "Submitting Your Leave Schedule...",
+                "Please wait, do not close this page",
+            );
+
+            // Show loading
+            const submitBtn = document.getElementById("finalSubmitBtn");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+
+            try {
+                // Use JSONP for submission to avoid CORS issues
+                const script = document.createElement("script");
+                const callbackName = "submitCallback_" + Date.now();
+
+                window[callbackName] = function (result) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    hideSpinner();
+
+                    if (result.success) {
+
+                        const wasEditMode = isEditMode;
+                        const editCount = result.editCount; // Get count from backend
+
+                        // 1. Capture the identity data BEFORE we reset the session
+                        const staffName = `${staffData.firstName} ${staffData.surname}`;
+                        const staffPsn = staffData.psn;
+                        // 2. Snapshot installments for the summary BEFORE resetSession clears them
+                        const submittedInstallments = installments.map(inst => ({
+                            startDate: inst.startDate,
+                            days: inst.days,
+                            resumptionDate: inst.resumptionDate
+                        }));
+
+                        // 3. Update the Heading text based on Edit vs New
+                        const successHeading = document.getElementById("successHeading");
+                        if (wasEditMode) {
+                            const timesLabel = editCount === 1 ? "Time" : "Times";
+                            successHeading.textContent = `Successfully Updated ${editCount} ${timesLabel}!`;
+                        } else {
+                            successHeading.textContent = "Successfully Submitted!";
+                        }
+
+                        // 4. Reset session and hide form container
+                        resetSession();
+                        document.querySelector(".form-container").style.display = "none";
+                        
+                        // Reset all session state - clears the form and staff details.
+                        // The success container lives outside .form-container so it
+                        // is unaffected by resetSession and will display correctly.
+                        resetSession();
+                        document.querySelector(
+                            ".form-container",
+                        ).style.display = "none";
+
+                        // Populate success schedule summary
+                        let scheduleHTML = `
+                            <div style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--green); text-align: left;">
+                                <h3 style="color: var(--navy-blue); margin: 0 0 5px 0;">${staffName}</h3>
+                                <span style="color: #777; font-weight: 600;">PSN: ${staffPsn}</span>
+                            </div>
+                            <h4 style="color: var(--navy-blue); margin: 0 0 15px 0; text-align: left;">Leave Schedule Summary</h4>
+                        `;
+                        submittedInstallments.forEach((inst, index) => {
+                            const startDateObj = new Date(inst.startDate);
+                            const resumptionDateObj = new Date(inst.resumptionDate);
+                            // Calculate last leave day (one day before resumption)
+                            const lastLeaveDay = new Date(resumptionDateObj);
+                            lastLeaveDay.setDate(lastLeaveDay.getDate() - 1);
+
+                            scheduleHTML += `
+                                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;">
+                                        <strong style="color: var(--navy-blue);">Installment ${index + 1}:</strong><br>
+                                        <span style="color: #777;">Leave: ${formatReadableDate(startDateObj)} to ${formatReadableDate(lastLeaveDay)}</span><br>
+                                        <span style="color: var(--green); font-weight: 600;">Resume: ${formatReadableDate(resumptionDateObj)}</span><br>
+                                        <span style="color: #777;">Duration: ${inst.days} working days</span>
+                                    </div>
+                                `;
+                        });
+                        // Remove the last border
+                        scheduleHTML = scheduleHTML.replace(/border-bottom: 1px solid #dee2e6;(?![\s\S]*border-bottom)/, '');
+                        document.getElementById('successSchedule').innerHTML = scheduleHTML;
+
+                        const successStatus =
+                            document.getElementById("successStatusText");
+                        const editWindowHours =
+                            parseInt(systemConfig.EDIT_WINDOW_HOURS) || 48;
+                        if (wasEditMode) {
+                            successStatus.textContent = `Your changes have been saved. Edit window still active for ${editWindowHours} hours from original submission.`;
+                        } else {
+                            successStatus.textContent = `You can edit this within ${editWindowHours} hours`;
+                        }
+                        document.getElementById(
+                            "successContainer",
+                        ).style.display = "block";
+                    } else {
+                        showErrorModal(
+                            result.message ||
+                            result.error ||
+                            "Error submitting form. Please try again.",
+                        );
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Confirm & Submit →";
+                    }
+                };
+
+                // Encode data for URL
+                const dataParam = encodeURIComponent(
+                    JSON.stringify(submissionData),
+                );
+                script.src = `${LEAVE_SUBMISSION_URL}?action=submit&data=${dataParam}&callback=${callbackName}`;
+
+                script.onerror = function () {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    hideSpinner();
+                    showErrorModal(
+                        "Error connecting to server. Please try again.",
+                    );
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Confirm & Submit →";
+                };
+
+                document.body.appendChild(script);
+            } catch (error) {
+                // console.error("Error submitting form:", error);
+                hideSpinner();
+                showErrorModal("Error submitting form. Please try again.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Confirm & Submit →";
+            }
+        }
+
+        /**
+         * Displays the error modal with a given message.
+         *
+         * Used for both validation errors (inline messages handle field-level errors;
+         * this handles submission-level errors) and connectivity failures.
+         *
+         * @param {string} message - The error text to display to the user.
+         */
+        function showErrorModal(message) {
+            document.getElementById("modalMessage").textContent = message;
+            document.getElementById("errorModal").style.display = "block";
+        }
+
+        /**
+         * Closes the error modal. Also called when the user clicks outside the modal
+         * via the `window.onclick` handler at the bottom of the script.
+         */
+        function closeModal() {
+            document.getElementById("errorModal").style.display = "none";
+        }
+
+        /**
+         * Formats a Date object as `"YYYY-MM-DD"`.
+         *
+         * Used for all internal date comparisons (holiday array lookups, min/max
+         * attribute values). Uses `toISOString()` which always returns UTC, so this
+         * is correct for dates already normalised to WAT midnight via {@link getWATToday}.
+         *
+         * @param {Date} date - The date to format.
+         * @returns {string}  - ISO date string, e.g. `"2026-06-26"`.
          */
         function formatDate(date) {
-            return date.toISOString().split('T')[0];
+            return date.toISOString().split("T")[0];
         }
 
         /**
-         * Format date as readable format
-         * @param {Date} date - Date to format
-         * @returns {string} - Formatted readable date
+         * Converts a date value to the `"YYYY-MM-DD"` string required by HTML date inputs.
+         *
+         * Handles three input types gracefully:
+         * - `Date` object → formatted directly using local year/month/day parts.
+         * - ISO string with time (e.g. `"2026-06-26T00:00:00Z"`) → strips time component.
+         * - Anything else or invalid → returns `""`.
+         *
+         * Prevents the browser console warning _"does not conform to the required format
+         * yyyy-MM-dd"_ that occurs when a raw Date object is assigned to an input's value.
+         *
+         * @param {Date|string|*} dateValue - The value to convert.
+         * @returns {string} `"YYYY-MM-DD"` string, or `""` if the input is invalid.
+         */
+        function formatDateForInput(dateValue) {
+            if (!dateValue) return "";
+
+            let date;
+            if (dateValue instanceof Date) {
+                date = dateValue;
+            } else if (typeof dateValue === "string") {
+                date = new Date(dateValue);
+            } else {
+                return "";
+            }
+
+            if (isNaN(date.getTime())) return "";
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Formats a Date as a long human-readable string for display in modals and summaries.
+         *
+         * Output example: `"Friday, 26 June 2026"` (locale: `en-GB`).
+         * Used in confirmation modals so the user can clearly verify their dates
+         * before final submission.
+         *
+         * @param {Date} date - The date to format.
+         * @returns {string}  - Full locale date string.
          */
         function formatReadableDate(date) {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
+            const options = {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            };
+            return date.toLocaleDateString("en-GB", options);
         }
+
+        // Event Listeners
+        document
+            .getElementById("lookupBtn")
+            .addEventListener("click", lookupStaff);
+        document
+            .getElementById("psnInput")
+            .addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    const lookupBtn = document.getElementById("lookupBtn");
+                    // Only trigger lookup if button is "Begin" and not disabled.
+                    // This is the semantic check: Begin = idle session, Start Over = active session.
+                    // The disabled check prevents double-firing during in-flight lookups.
+                    if (lookupBtn.textContent === "Begin" && !lookupBtn.disabled) {
+                        lookupStaff();
+                    }
+                }
+            });
+        document
+            .getElementById("leaveInstallments")
+            .addEventListener("change", generateLeaveDateSections);
+        document
+            .getElementById("leaveForm")
+            .addEventListener("submit", showConfirmationModal);
+        document
+            .getElementById("finalSubmitBtn")
+            .addEventListener("click", submitLeaveForm);
+        document
+            .getElementById("viewHandoverBtn")
+            .addEventListener("click", viewHandoverLeave);
+        document
+            .getElementById("editScheduleBtn")
+            .addEventListener("click", enableEditMode);
+
+        // Close modals when clicking outside
+        window.onclick = function (event) {
+            const errorModal = document.getElementById("errorModal");
+            const confirmModal = document.getElementById("confirmModal");
+            const handoverModal = document.getElementById("handoverModal");
+
+            if (event.target == errorModal) {
+                closeModal();
+            }
+            if (event.target == confirmModal) {
+                closeConfirmModal();
+            }
+            if (event.target == handoverModal) {
+                closeHandoverModal();
+            }
+        };
+
+        /**
+         * Decodes an XOR-encoded hex string back to its original plaintext.
+         *
+         * Each pair of hex characters represents one byte; XORing it with the
+         * key reverses the encoding. The key is stored in the element's `data-key`
+         * attribute alongside the encoded value.
+         *
+         * @param {string} encoded - Hex string from a `data-encoded` attribute.
+         * @param {number} key     - Integer XOR key from the corresponding `data-key` attribute.
+         * @returns {string}       - Original plaintext - an email address or a full URL.
+         */
+        function xorDecode(encoded, key) {
+            return encoded
+                .match(/.{2}/g)
+                .map((byte) =>
+                    String.fromCharCode(parseInt(byte, 16) ^ key),
+                )
+                .join("");
+        }
+
+        /**
+         * Attaches click-time contact decoding to every `.contact-link` element.
+         *
+         * The real email address or WhatsApp URL is decoded from `data-encoded` only
+         * at the moment of the click - it never exists as plaintext in the DOM before
+         * or after. This prevents automated scrapers from harvesting contact details
+         * by reading the HTML source.
+         *
+         * Supported `data-type` values:
+         * - `"email"`     → opens the decoded address via `mailto:`
+         * - `"whatsapp"`  → opens the decoded `https://wa.me/...` URL in a new tab
+         *
+         * To add a new contact type, add another `else if` branch here and a
+         * corresponding `<a class="contact-link" data-type="...">` in the HTML.
+         */
+        function attachContactClickHandlers() {
+            const contactLinks = document.querySelectorAll(
+                ".contact-link",
+            );
+
+            contactLinks.forEach((link) => {
+                link.addEventListener(
+                    "click",
+                    function handleContactClick(event) {
+                        event.preventDefault();
+
+                        const encoded = this.dataset.encoded;
+                        const key = parseInt(this.dataset.key, 10);
+                        const type = this.dataset.type;
+
+                        if (!encoded || !key) return;
+
+                        const decoded = xorDecode(encoded, key);
+
+                        if (type === "email") {
+                            window.location.href = "mailto:" + decoded;
+                        } else if (type === "whatsapp") {
+                            // decoded is the full https://wa.me/... URL
+                            window.open(
+                                decoded,
+                                "_blank",
+                                "noopener,noreferrer",
+                            );
+                        }
+                    },
+                );
+            });
+        }
+
+        // Call once when the DOM is ready
+        window.addEventListener(
+            "DOMContentLoaded",
+            attachContactClickHandlers,
+        );
     </script>
 </body>
 
