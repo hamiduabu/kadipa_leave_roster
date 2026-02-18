@@ -647,7 +647,7 @@
                 <label for="psnInput" class="required">Personnel Subhead Number (PSN)</label>
                 <input type="text" id="psnInput" placeholder="Enter your PSN" required />
             </div>
-            <button type="button" class="btn btn-block" id="lookupBtn">
+            <button type="button" class="btn btn-block" id="lookupBtn" disabled>
                 Begin
             </button>
         </div>
@@ -1147,6 +1147,12 @@
          * @returns {Promise<void>}
          */
         async function initializeApp() {
+            // Show loading spinner while fetching config and holidays
+            showSpinner(
+                "Initializing Application...",
+                "Loading configuration and holiday data"
+            );
+
             try {
                 // console.log("Loading system configuration...");
 
@@ -1173,9 +1179,18 @@
                     parseInt(systemConfig.MAX_INSTALLMENTS) || 6;
                 updateMaxInstallments(maxInstallments);
 
+                // Hide spinner and enable the Begin button
+                hideSpinner();
+                const lookupBtn = document.getElementById("lookupBtn");
+                lookupBtn.disabled = false;
+                lookupBtn.onclick = lookupStaff; // Set initial "Begin" behavior
+
                 // console.log("Application initialised successfully");
             } catch (error) {
                 // console.error("Error initialising app:", error);
+                // Hide spinner and enable button even on error so user can try
+                hideSpinner();
+                document.getElementById("lookupBtn").disabled = false;
             }
         }
 
@@ -1446,7 +1461,7 @@
             const lookupBtn = document.getElementById("lookupBtn");
             lookupBtn.textContent = "Begin";
             lookupBtn.className = "btn btn-block";
-            lookupBtn.onclick = null;
+            lookupBtn.onclick = lookupStaff; // Restore "Begin" behavior
 
             // Scroll to top and focus PSN input so the user is ready to go
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3122,39 +3137,44 @@
             return date.toLocaleDateString("en-GB", options);
         }
 
-        // Event Listeners
-        document
-            .getElementById("lookupBtn")
-            .addEventListener("click", lookupStaff);
-        document
-            .getElementById("psnInput")
-            .addEventListener("keypress", (event) => {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    const lookupBtn = document.getElementById("lookupBtn");
-                    // Only trigger lookup if button is "Begin" and not disabled.
-                    // This is the semantic check: Begin = idle session, Start Over = active session.
-                    // The disabled check prevents double-firing during in-flight lookups.
-                    if (lookupBtn.textContent === "Begin" && !lookupBtn.disabled) {
-                        lookupStaff();
+        // Event Listeners - attach after DOM is ready
+        window.addEventListener("DOMContentLoaded", function() {
+            // Note: lookupBtn click is NOT added here via addEventListener.
+            // It's managed via onclick property (set in initializeApp) to allow
+            // clean switching between "Begin" (lookupStaff) and "Start Over" (resetSession)
+            // without double-firing issues.
+            
+            document
+                .getElementById("psnInput")
+                .addEventListener("keydown", (event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        const lookupBtn = document.getElementById("lookupBtn");
+                        // Only trigger lookup if button is "Begin" and not disabled.
+                        // .trim() handles whitespace in the HTML markup.
+                        // This is the semantic check: Begin = idle session, Start Over = active session.
+                        // The disabled check prevents double-firing during in-flight lookups.
+                        if (lookupBtn.textContent.trim() === "Begin" && !lookupBtn.disabled) {
+                            lookupStaff();
+                        }
                     }
-                }
-            });
-        document
-            .getElementById("leaveInstallments")
-            .addEventListener("change", generateLeaveDateSections);
-        document
-            .getElementById("leaveForm")
-            .addEventListener("submit", showConfirmationModal);
-        document
-            .getElementById("finalSubmitBtn")
-            .addEventListener("click", submitLeaveForm);
-        document
-            .getElementById("viewHandoverBtn")
-            .addEventListener("click", viewHandoverLeave);
-        document
-            .getElementById("editScheduleBtn")
-            .addEventListener("click", enableEditMode);
+                });
+            document
+                .getElementById("leaveInstallments")
+                .addEventListener("change", generateLeaveDateSections);
+            document
+                .getElementById("leaveForm")
+                .addEventListener("submit", showConfirmationModal);
+            document
+                .getElementById("finalSubmitBtn")
+                .addEventListener("click", submitLeaveForm);
+            document
+                .getElementById("viewHandoverBtn")
+                .addEventListener("click", viewHandoverLeave);
+            document
+                .getElementById("editScheduleBtn")
+                .addEventListener("click", enableEditMode);
+        });
 
         // Close modals when clicking outside
         window.onclick = function (event) {
